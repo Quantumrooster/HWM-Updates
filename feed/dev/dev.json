@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.4.1",
-  "publishedUtc": "2026-09-04T16:28:14.9641146Z",
+  "releaseVersion": "0.2.4.2",
+  "publishedUtc": "2026-09-04T17:33:23.4392292Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.4.1 adds Managed Update Awareness to workstation heartbeats: updater version, ring, state, last success, installed release, rollback use and last error.",
+  "releaseNotes": "HWM 0.2.4.2 adds multi-volume storage health, physical disk SMART/reliability telemetry where Windows exposes it, and Headline Tools managed-delivery awareness while retaining the portable Desktop workflow.",
   "components": {
-    "hwmServiceVersion": "0.2.4.1",
+    "hwmServiceVersion": "0.2.4.2",
     "hwmTrayVersion": "",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.4.1-DEV.zip",
-    "sha256": "981729C8BDEAED10D4552C6119D3FC36326CB4062BBB87C5BC4A6EB3B0F75B81",
-    "sizeBytes": 31474292
+    "url": "Headline-HWM-Service-v0.2.4.2-DEV.zip",
+    "sha256": "BA370248D096C0AA7697136BE8E8623EADD9CCA6E67B4E379D286EDB12DB105A",
+    "sizeBytes": 31483573
   }
 }
