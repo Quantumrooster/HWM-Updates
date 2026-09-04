@@ -28,6 +28,8 @@ jobs:
     steps:
       - name: Checkout public update feed
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Validate private repository token
         shell: bash
@@ -137,7 +139,8 @@ jobs:
           else
             version=$(jq -r '.releaseVersion' feed/dev/dev.json)
             git commit -m "release: publish HWM ${version} DEV feed"
-            git push origin main
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
 
       - name: Prepare Pages site
