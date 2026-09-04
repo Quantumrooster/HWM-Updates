@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.4.2",
-  "publishedUtc": "2026-09-04T17:33:23.4392292Z",
+  "releaseVersion": "0.2.4.3",
+  "publishedUtc": "2026-09-04T18:11:34.0550911Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.4.2 adds multi-volume storage health, physical disk SMART/reliability telemetry where Windows exposes it, and Headline Tools managed-delivery awareness while retaining the portable Desktop workflow.",
+  "releaseNotes": "HWM 0.2.4.3 fixes agent version reporting by deriving the heartbeat version from the running service assembly. It retains the multi-volume storage health, SMART/reliability telemetry, and Headline Tools awareness added in 0.2.4.2.",
   "components": {
-    "hwmServiceVersion": "0.2.4.2",
+    "hwmServiceVersion": "0.2.4.3",
     "hwmTrayVersion": "",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.4.2-DEV.zip",
-    "sha256": "BA370248D096C0AA7697136BE8E8623EADD9CCA6E67B4E379D286EDB12DB105A",
-    "sizeBytes": 31483573
+    "url": "Headline-HWM-Service-v0.2.4.3-DEV.zip",
+    "sha256": "AA5799F0AE4528684A8DC329C016650AB98B4699CCF10C330DCE7210BE490473",
+    "sizeBytes": 31483496
   }
 }
