@@ -7,15 +7,24 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 env:
   PRIVATE_REPO: Quantumrooster/HWM
   PRIVATE_WORKFLOW: hwm-dev-release.yml
   PRIVATE_BRANCH: feature/managed-updater-v2
 
+concurrency:
+  group: hwm-dev-sync
+  cancel-in-progress: true
+
 jobs:
   sync-dev:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout public update feed
         uses: actions/checkout@v4
@@ -104,9 +113,9 @@ jobs:
           actual_hash=$(sha256sum "$package" | awk '{print toupper($1)}')
           actual_size=$(stat -c%s "$package")
 
-          [ "$expected_name" = "$actual_name" ] || { echo "Manifest package name mismatch." >&2; exit 1; }
-          [ "$expected_hash" = "$actual_hash" ] || { echo "Manifest SHA256 mismatch." >&2; exit 1; }
-          [ "$expected_size" = "$actual_size" ] || { echo "Manifest package size mismatch." >&2; exit 1; }
+          [ "$expected_name" = "$actual_name" ] || { echo 'Manifest package name mismatch.' >&2; exit 1; }
+          [ "$expected_hash" = "$actual_hash" ] || { echo 'Manifest SHA256 mismatch.' >&2; exit 1; }
+          [ "$expected_size" = "$actual_size" ] || { echo 'Manifest package size mismatch.' >&2; exit 1; }
 
           mkdir -p feed/dev
           find feed/dev -maxdepth 1 -type f \( -name 'dev.json' -o -name 'Headline-HWM-Service-v*-DEV.zip' \) -delete
@@ -118,9 +127,6 @@ jobs:
 
       - name: Commit feed only when release changed
         shell: bash
-        env:
-          RUN_ID: ${{ steps.latest.outputs.run_id }}
-          ARTIFACT_NAME: ${{ steps.latest.outputs.artifact_name }}
         run: |
           set -euo pipefail
           git config user.name 'Headline HWM Release Bot'
@@ -128,8 +134,30 @@ jobs:
           git add feed/dev
           if git diff --cached --quiet; then
             echo 'Public DEV feed is already current.'
-            exit 0
+          else
+            version=$(jq -r '.releaseVersion' feed/dev/dev.json)
+            git commit -m "release: publish HWM ${version} DEV feed"
+            git push origin main
           fi
-          version=$(jq -r '.releaseVersion' feed/dev/dev.json)
-          git commit -m "release: publish HWM ${version} DEV feed"
-          git push origin main
+
+      - name: Prepare Pages site
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site
+          cp -R feed/. _site/
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Headline HWM Update Feed</title></head>
+          <body><h1>Headline HWM Update Feed</h1><p>Managed update service for Headline Workstation Monitor.</p></body></html>
+          HTML
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
