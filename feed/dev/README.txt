@@ -1,2 +1,2 @@
 Headline HWM DEV update channel.
-Release manifests and payloads are published here by the private HWM release pipeline.
+Current release: 0.2.4.1
