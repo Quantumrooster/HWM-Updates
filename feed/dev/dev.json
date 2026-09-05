@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.4.7",
-  "publishedUtc": "2026-09-05T19:14:44.5142239Z",
+  "releaseVersion": "0.2.4.8",
+  "publishedUtc": "2026-09-05T20:51:02.8975230Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.4.7 adds a managed default source for HCS Service Tool. Managed workstations automatically seed the approved Headline SharePoint download source when HcsServiceToolSource is blank, while preserving any manually configured override. Tray guardian behaviour from 0.2.4.6 is retained.",
+  "releaseNotes": "HWM 0.2.4.8 is a tray-only maintenance release. Tray 1.0.0.3 self-heals legacy blank HcsServiceToolSource settings by persisting the approved Headline-managed SharePoint source from inside the HCS Service Tool launcher. Service remains 0.2.4.7.",
   "components": {
     "hwmServiceVersion": "0.2.4.7",
-    "hwmTrayVersion": "1.0.0.2",
+    "hwmTrayVersion": "1.0.0.3",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.4.7-DEV.zip",
-    "sha256": "2A074DE5EB42E3C0E7009DD212D37073464AEAC7873F2CA4BC1B1FD5AC418F2E",
-    "sizeBytes": 99287181
+    "url": "Headline-HWM-Service-v0.2.4.8-DEV.zip",
+    "sha256": "0155801F4B68CD131CDFB71D23BFF313097802187954E6EFC27C017CEF7B3827",
+    "sizeBytes": 99287294
   }
 }
