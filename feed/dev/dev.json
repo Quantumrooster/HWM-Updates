@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.4.3",
-  "publishedUtc": "2026-09-04T18:11:34.0550911Z",
+  "releaseVersion": "0.2.4.4",
+  "publishedUtc": "2026-09-05T02:56:11.5349490Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.4.3 fixes agent version reporting by deriving the heartbeat version from the running service assembly. It retains the multi-volume storage health, SMART/reliability telemetry, and Headline Tools awareness added in 0.2.4.2.",
+  "releaseNotes": "HWM 0.2.4.4 updates both the monitoring service and the workstation tray/UI. It deploys the current tray startup/single-instance protections to replace older tray builds that can crash with stack overflow while retaining all 0.2.4.3 service health features.",
   "components": {
-    "hwmServiceVersion": "0.2.4.3",
-    "hwmTrayVersion": "",
+    "hwmServiceVersion": "0.2.4.4",
+    "hwmTrayVersion": "0.2.4.4",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.4.3-DEV.zip",
-    "sha256": "AA5799F0AE4528684A8DC329C016650AB98B4699CCF10C330DCE7210BE490473",
-    "sizeBytes": 31483496
+    "url": "Headline-HWM-Service-v0.2.4.4-DEV.zip",
+    "sha256": "504216B47B2D9E08D481C508103986EEAC03D81902DB291ADF97A9C1992C973B",
+    "sizeBytes": 99276527
   }
 }
