@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.4.6",
-  "publishedUtc": "2026-09-05T08:25:52.5005971Z",
+  "releaseVersion": "0.2.4.7",
+  "publishedUtc": "2026-09-05T19:14:44.5142239Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.4.6 adds an interactive tray guardian to the monitoring service. The service detects the active Windows user session and launches the installed HWM tray there when it is not already running, including immediately after managed updates and after later user sign-ins.",
+  "releaseNotes": "HWM 0.2.4.7 adds a managed default source for HCS Service Tool. Managed workstations automatically seed the approved Headline SharePoint download source when HcsServiceToolSource is blank, while preserving any manually configured override. Tray guardian behaviour from 0.2.4.6 is retained.",
   "components": {
-    "hwmServiceVersion": "0.2.4.6",
-    "hwmTrayVersion": "1.0.0.1",
+    "hwmServiceVersion": "0.2.4.7",
+    "hwmTrayVersion": "1.0.0.2",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.4.6-DEV.zip",
-    "sha256": "076987972CD3CAF1648416C76F2532B5E1CDE52E3219650AF88E8270F36238D9",
-    "sizeBytes": 99281306
+    "url": "Headline-HWM-Service-v0.2.4.7-DEV.zip",
+    "sha256": "2A074DE5EB42E3C0E7009DD212D37073464AEAC7873F2CA4BC1B1FD5AC418F2E",
+    "sizeBytes": 99287181
   }
 }
