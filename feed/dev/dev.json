@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.4.4",
-  "publishedUtc": "2026-09-05T02:56:11.5349490Z",
+  "releaseVersion": "0.2.4.5",
+  "publishedUtc": "2026-09-05T07:10:07.8482713Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.4.4 updates both the monitoring service and the workstation tray/UI. It deploys the current tray startup/single-instance protections to replace older tray builds that can crash with stack overflow while retaining all 0.2.4.3 service health features.",
+  "releaseNotes": "HWM 0.2.4.5 keeps service and tray versioning independent. The service updates to 0.2.4.5 and the workstation tray updates from legacy 1.0.0.0 to 1.0.0.1, allowing the managed updater to correctly replace the old tray build.",
   "components": {
-    "hwmServiceVersion": "0.2.4.4",
-    "hwmTrayVersion": "0.2.4.4",
+    "hwmServiceVersion": "0.2.4.5",
+    "hwmTrayVersion": "1.0.0.1",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.4.4-DEV.zip",
-    "sha256": "504216B47B2D9E08D481C508103986EEAC03D81902DB291ADF97A9C1992C973B",
-    "sizeBytes": 99276527
+    "url": "Headline-HWM-Service-v0.2.4.5-DEV.zip",
+    "sha256": "CB6F8252615159152A2218BBA7DE80441BE817C802E521F629EA03E321037D54",
+    "sizeBytes": 99276724
   }
 }

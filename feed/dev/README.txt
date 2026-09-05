@@ -1,2 +1,2 @@
 Headline HWM DEV update channel.
-Current release: 0.2.4.4
+Current release: 0.2.4.5
