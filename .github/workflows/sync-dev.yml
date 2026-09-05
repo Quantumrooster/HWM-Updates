@@ -1,5 +1,5 @@
 name: Sync Latest HWM DEV Release
-# Fresh sync trigger for HWM 0.2.4.3 DEV.
+# Fresh sync trigger for HWM 0.2.4.4 DEV.
 
 on:
   workflow_dispatch:
