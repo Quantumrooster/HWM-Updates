@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.4.5",
-  "publishedUtc": "2026-09-05T07:10:07.8482713Z",
+  "releaseVersion": "0.2.4.6",
+  "publishedUtc": "2026-09-05T08:25:52.5005971Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.4.5 keeps service and tray versioning independent. The service updates to 0.2.4.5 and the workstation tray updates from legacy 1.0.0.0 to 1.0.0.1, allowing the managed updater to correctly replace the old tray build.",
+  "releaseNotes": "HWM 0.2.4.6 adds an interactive tray guardian to the monitoring service. The service detects the active Windows user session and launches the installed HWM tray there when it is not already running, including immediately after managed updates and after later user sign-ins.",
   "components": {
-    "hwmServiceVersion": "0.2.4.5",
+    "hwmServiceVersion": "0.2.4.6",
     "hwmTrayVersion": "1.0.0.1",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.4.5-DEV.zip",
-    "sha256": "CB6F8252615159152A2218BBA7DE80441BE817C802E521F629EA03E321037D54",
-    "sizeBytes": 99276724
+    "url": "Headline-HWM-Service-v0.2.4.6-DEV.zip",
+    "sha256": "076987972CD3CAF1648416C76F2532B5E1CDE52E3219650AF88E8270F36238D9",
+    "sizeBytes": 99281306
   }
 }
