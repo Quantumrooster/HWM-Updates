@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.4.8",
-  "publishedUtc": "2026-09-05T20:51:02.8975230Z",
+  "releaseVersion": "0.2.4.9",
+  "publishedUtc": "2026-09-06T00:18:22.1304164Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.4.8 is a tray-only maintenance release. Tray 1.0.0.3 self-heals legacy blank HcsServiceToolSource settings by persisting the approved Headline-managed SharePoint source from inside the HCS Service Tool launcher. Service remains 0.2.4.7.",
+  "releaseNotes": "HWM 0.2.4.9 fixes the Headline Tools permission crash and tray restart storm. Tray 1.0.0.4 uses the approved Headline-managed HCS Service Tool source in memory when settings are blank and no longer writes machine-wide ProgramData settings from the user tray. Service 0.2.4.9 adds a tray guardian circuit breaker: after 3 fresh launches within 10 minutes, relaunch is suspended for 30 minutes while endpoint monitoring continues.",
   "components": {
-    "hwmServiceVersion": "0.2.4.7",
-    "hwmTrayVersion": "1.0.0.3",
+    "hwmServiceVersion": "0.2.4.9",
+    "hwmTrayVersion": "1.0.0.4",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.4.8-DEV.zip",
-    "sha256": "0155801F4B68CD131CDFB71D23BFF313097802187954E6EFC27C017CEF7B3827",
-    "sizeBytes": 99287294
+    "url": "Headline-HWM-Service-v0.2.4.9-DEV.zip",
+    "sha256": "B5971A1BDD7D00148BFA54790031623F0A8194D6E49529B9E00DE0A181F652FA",
+    "sizeBytes": 99286389
   }
 }
