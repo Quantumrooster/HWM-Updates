@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "channel": "dev",
   "releaseVersion": "0.2.5.0",
-  "publishedUtc": "2026-09-06T04:08:46.9316564Z",
+  "publishedUtc": "2026-09-06T05:02:59.6284860Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.0 improves Event Health application crash quality and fixes HCS Service Tool launching for standard users. Related Application Error 1000 and .NET Runtime 1026 records for the same executable can be paired into one logical crash incident while retaining the Application Error fingerprint for compatible operator exclusions. Tray 1.0.0.5 stores HCS Service Tool downloads and launch history under the logged-in user LocalAppData instead of SYSTEM-owned ProgramData, so downloading and launching HCSST no longer requires machine-wide write permission.",
+  "releaseNotes": "HWM 0.2.5.0 improves Event Health application crash quality and fixes HCS Service Tool launching for standard users. Related Application Error 1000 and .NET Runtime 1026 records for the same executable can be paired into one logical crash incident while retaining the Application Error fingerprint for compatible operator exclusions. Tray 1.0.0.5 stores HCS Service Tool downloads and launch history under the logged-in user LocalAppData instead of SYSTEM-owned ProgramData. Managed Updater 0.1.3.0 adds cache-busted HTTPS manifest checks so newly published releases are discovered promptly.",
   "components": {
     "hwmServiceVersion": "0.2.5.0",
     "hwmTrayVersion": "1.0.0.5",
@@ -14,7 +14,7 @@
   },
   "package": {
     "url": "Headline-HWM-Service-v0.2.5.0-DEV.zip",
-    "sha256": "2421B794824589E56C17B417D73CFB7073E635F293A58D94979EA3F2A20805AB",
-    "sizeBytes": 99288871
+    "sha256": "E1E158D9E1054F2AE4ADF808B8C81D302438BA9D11B764EDED8E707A47EFB9DD",
+    "sizeBytes": 99288924
   }
 }
