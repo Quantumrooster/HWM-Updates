@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "channel": "pilot",
+  "releaseVersion": "0.2.5.1",
+  "publishedUtc": "2026-09-08T06:50:00Z",
+  "urgent": false,
+  "allowDowngrade": false,
+  "minimumUpdaterVersion": "0.1.2.0",
+  "releaseNotes": "Sports & Spinal controlled pilot of known-good HWM 0.2.5.1. Service 0.2.5.0, Tray 1.0.0.6. Promoted from the validated DEV payload after AML/Headline field testing.",
+  "components": {
+    "hwmServiceVersion": "0.2.5.0",
+    "hwmTrayVersion": "1.0.0.6",
+    "hcsAutomationVersion": ""
+  },
+  "package": {
+    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.1-DEV.zip",
+    "sha256": "CD94A61445DB4092B8C3B671897F209CE4EA05A33CE08BB389CCC5443FB53AB0",
+    "sizeBytes": 99289093
+  }
+}
