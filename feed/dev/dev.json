@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.3",
-  "publishedUtc": "2026-09-11T09:18:21.6371277Z",
+  "releaseVersion": "0.2.5.4",
+  "publishedUtc": "2026-09-11T09:35:22.6294089Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.3 introduces HWM Terminal v1 in service 0.2.5.2. Authenticated Headline technician commands use the existing outbound HWM heartbeat channel with no inbound listener. Terminal.Run supports one-shot PowerShell or CMD, a maximum 60 second runtime, bounded output, short command expiry, operator audit identity and process-tree termination on timeout. Existing Mesh recovery watchdog behaviour from 0.2.5.2 is unchanged. Tray 1.0.0.6 and Managed Updater 0.1.3.0 are unchanged.",
+  "releaseNotes": "HWM 0.2.5.4 improves HWM Terminal responsiveness in service 0.2.5.3. Terminal commands now use an isolated authenticated outbound channel and dedicated HwmTerminalCommands queue, polled every 15 seconds after the service has completed a successful cloud heartbeat. Normal remediation and monitoring heartbeat behaviour is unchanged. Terminal safety limits remain: one-shot PowerShell or CMD, short expiry, maximum 60 second runtime, bounded output, operator audit identity and process-tree termination on timeout. Mesh recovery watchdog behaviour is unchanged. Tray 1.0.0.6 and Managed Updater 0.1.3.0 are unchanged.",
   "components": {
-    "hwmServiceVersion": "0.2.5.2",
+    "hwmServiceVersion": "0.2.5.3",
     "hwmTrayVersion": "1.0.0.6",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.5.3-DEV.zip",
-    "sha256": "5FDC3292FCF825BC5DDF6EB5D419F4F824A00C18B01C6874768BEFB40F151D1C",
-    "sizeBytes": 99296520
+    "url": "Headline-HWM-Service-v0.2.5.4-DEV.zip",
+    "sha256": "B8268B4BDC3B153EC672A9EF11D5D05056CDC1FFA256A9EE40F9CA501849C1F3",
+    "sizeBytes": 99301452
   }
 }
