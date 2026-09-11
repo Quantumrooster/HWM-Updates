@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.5",
-  "publishedUtc": "2026-09-11T09:49:43.0371285Z",
+  "releaseVersion": "0.2.5.6",
+  "publishedUtc": "2026-09-11T10:01:25.4941137Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.5 hardens the isolated HWM Terminal fast channel in service 0.2.5.4. Terminal queue polling now uses authenticated POST requests rather than GET and logs the Azure rejection body if a poll is refused. This aligns the command transport with the proven heartbeat request pattern while keeping monitoring, remediation and Mesh recovery unchanged. Terminal safety limits remain: one-shot PowerShell or CMD, short expiry, maximum 60 second runtime, bounded output, operator audit identity and process-tree termination on timeout. Tray 1.0.0.6 and Managed Updater 0.1.3.0 are unchanged.",
+  "releaseNotes": "HWM 0.2.5.6 moves the isolated HWM Terminal fast channel in service 0.2.5.5 onto the existing authenticated /api/heartbeat transport. Terminal poll and result modes return before health, Mesh presence or normal remediation processing, so the proven Azure device route is reused without generating fake heartbeats or altering workstation health. The separate terminal command table, 15 second polling, one-shot execution, short expiry, 60 second maximum runtime, bounded output, operator audit identity and process-tree termination remain unchanged. Tray 1.0.0.6 and Managed Updater 0.1.3.0 are unchanged.",
   "components": {
-    "hwmServiceVersion": "0.2.5.4",
+    "hwmServiceVersion": "0.2.5.5",
     "hwmTrayVersion": "1.0.0.6",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.5.5-DEV.zip",
-    "sha256": "907C24CD5B5529FE7C989220CF02A3EEAB0AE47AB756261F68A97778324487E5",
-    "sizeBytes": 99301435
+    "url": "Headline-HWM-Service-v0.2.5.6-DEV.zip",
+    "sha256": "894780DE7BA61E589ACF59ABC2D976E014399189AC215DE825687364504F7984",
+    "sizeBytes": 99301381
   }
 }
