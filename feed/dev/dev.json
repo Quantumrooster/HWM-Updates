@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.4",
-  "publishedUtc": "2026-09-11T09:35:22.6294089Z",
+  "releaseVersion": "0.2.5.5",
+  "publishedUtc": "2026-09-11T09:49:43.0371285Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.4 improves HWM Terminal responsiveness in service 0.2.5.3. Terminal commands now use an isolated authenticated outbound channel and dedicated HwmTerminalCommands queue, polled every 15 seconds after the service has completed a successful cloud heartbeat. Normal remediation and monitoring heartbeat behaviour is unchanged. Terminal safety limits remain: one-shot PowerShell or CMD, short expiry, maximum 60 second runtime, bounded output, operator audit identity and process-tree termination on timeout. Mesh recovery watchdog behaviour is unchanged. Tray 1.0.0.6 and Managed Updater 0.1.3.0 are unchanged.",
+  "releaseNotes": "HWM 0.2.5.5 hardens the isolated HWM Terminal fast channel in service 0.2.5.4. Terminal queue polling now uses authenticated POST requests rather than GET and logs the Azure rejection body if a poll is refused. This aligns the command transport with the proven heartbeat request pattern while keeping monitoring, remediation and Mesh recovery unchanged. Terminal safety limits remain: one-shot PowerShell or CMD, short expiry, maximum 60 second runtime, bounded output, operator audit identity and process-tree termination on timeout. Tray 1.0.0.6 and Managed Updater 0.1.3.0 are unchanged.",
   "components": {
-    "hwmServiceVersion": "0.2.5.3",
+    "hwmServiceVersion": "0.2.5.4",
     "hwmTrayVersion": "1.0.0.6",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.5.4-DEV.zip",
-    "sha256": "B8268B4BDC3B153EC672A9EF11D5D05056CDC1FFA256A9EE40F9CA501849C1F3",
-    "sizeBytes": 99301452
+    "url": "Headline-HWM-Service-v0.2.5.5-DEV.zip",
+    "sha256": "907C24CD5B5529FE7C989220CF02A3EEAB0AE47AB756261F68A97778324487E5",
+    "sizeBytes": 99301435
   }
 }
