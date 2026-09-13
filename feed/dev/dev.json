@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.9",
-  "publishedUtc": "2026-09-13T00:32:58.1113083Z",
+  "releaseVersion": "0.2.5.10",
+  "publishedUtc": "2026-09-13T01:11:47.3801670Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.9 contains service 0.2.5.8. Antivirus reporting now uses Microsoft Defender active Normal mode and real time status before trusting a stale third party Windows Security Center registration. This fixes machines where ESET was removed but remained listed by Security Center. Terminal burst polling, Mesh recovery, tray 1.0.0.6 and Managed Updater 0.1.3.0 are unchanged.",
+  "releaseNotes": "HWM 0.2.5.10 contains service 0.2.5.9. Fixes stale ESET antivirus labels when Microsoft Defender is actively protecting the endpoint. After the updater verifies a successful service start, pilot workstations move to Stable and both pilot and stable workstations register a 15 minute SYSTEM update check. Existing updater mutex and maintenance window remain in effect. Terminal, Mesh recovery, tray 1.0.0.6 and updater binary remain unchanged.",
   "components": {
-    "hwmServiceVersion": "0.2.5.8",
+    "hwmServiceVersion": "0.2.5.9",
     "hwmTrayVersion": "1.0.0.6",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.5.9-DEV.zip",
-    "sha256": "662EF24FBD3A718F23EA46A2EC54A454ADA28FF6AF996C695E8AEB1D82C4A10D",
-    "sizeBytes": 99301658
+    "url": "Headline-HWM-Service-v0.2.5.10-DEV.zip",
+    "sha256": "84E25C666AD5A668525E2AD1BD46309ED04DC19C752610E0551F8B32F4D2A732",
+    "sizeBytes": 99305999
   }
 }
