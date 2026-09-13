@@ -41,6 +41,29 @@ jobs:
           <body><h1>Headline HWM Update Feed</h1><p>Managed update service for Headline Workstation Monitor.</p></body></html>
           HTML
 
+      - name: Validate manifests and published packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          for channel in dev pilot stable; do
+            manifest="_site/$channel/$channel.json"
+            [ -f "$manifest" ] || { echo "Missing $manifest" >&2; exit 1; }
+            url=$(jq -r '.package.url' "$manifest")
+            case "$url" in
+              https://quantumrooster.github.io/HWM-Updates/*)
+                package="_site/${url#https://quantumrooster.github.io/HWM-Updates/}" ;;
+              http://*|https://*)
+                echo "Unexpected external package URL in $manifest: $url" >&2; exit 1 ;;
+              *)
+                package="_site/$channel/$url" ;;
+            esac
+            [ -f "$package" ] || { echo "Missing package for $manifest: $package" >&2; exit 1; }
+            expected_size=$(jq -r '.package.sizeBytes' "$manifest")
+            expected_hash=$(jq -r '.package.sha256 | ascii_upcase' "$manifest")
+            [ "$(stat -c%s "$package")" = "$expected_size" ] || { echo "Size mismatch: $package" >&2; exit 1; }
+            [ "$(sha256sum "$package" | cut -d' ' -f1 | tr '[:lower:]' '[:upper:]')" = "$expected_hash" ] || { echo "SHA256 mismatch: $package" >&2; exit 1; }
+          done
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
