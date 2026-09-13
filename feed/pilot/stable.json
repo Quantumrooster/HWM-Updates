@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "channel": "stable",
+  "releaseVersion": "0.2.5.10",
+  "publishedUtc": "2026-09-13T01:14:10.336Z",
+  "urgent": true,
+  "allowDowngrade": false,
+  "minimumUpdaterVersion": "0.1.2.0",
+  "releaseNotes": "Fleet convergence release 0.2.5.10, service 0.2.5.9. Corrects stale ESET labels when Defender is active. Following verified installation, existing Pilot endpoints switch to Stable and Pilot and Stable endpoints gain a 15 minute scheduled updater check. Existing update verification and rollback remain in force.",
+  "components": {
+    "hwmServiceVersion": "0.2.5.9",
+    "hwmTrayVersion": "1.0.0.6",
+    "hcsAutomationVersion": ""
+  },
+  "package": {
+    "url": "https://quantumrooster.github.io/HWM-Updates/releases/Headline-HWM-Service-v0.2.5.10.zip",
+    "sha256": "84E25C666AD5A668525E2AD1BD46309ED04DC19C752610E0551F8B32F4D2A732",
+    "sizeBytes": 99305999
+  }
+}
