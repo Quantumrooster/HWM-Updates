@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "stable",
-  "releaseVersion": "0.2.5.6",
-  "publishedUtc": "2026-09-11T20:15:00Z",
-  "urgent": false,
+  "releaseVersion": "0.2.5.10",
+  "publishedUtc": "2026-09-13T01:14:10.336Z",
+  "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.6 STABLE promotion using the exact DEV and PILOT tested package. Service 0.2.5.5 provides the authenticated HWM Terminal fast channel over the existing /api/heartbeat transport, while preserving normal health, Headline Remote self healing and Mesh recovery behaviour. Tray 1.0.0.6 and Managed Updater 0.1.3.0 are unchanged. This STABLE promotion reuses the exact previously tested package without rebuilding.",
+  "releaseNotes": "Fleet convergence release 0.2.5.10, service 0.2.5.9. Corrects stale ESET labels when Defender is active. Following verified installation, existing Pilot endpoints switch to Stable and Pilot and Stable endpoints gain a 15 minute scheduled updater check. Existing update verification and rollback remain in force.",
   "components": {
-    "hwmServiceVersion": "0.2.5.5",
+    "hwmServiceVersion": "0.2.5.9",
     "hwmTrayVersion": "1.0.0.6",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/stable/Headline-HWM-Service-v0.2.5.6-DEV.zip",
-    "sha256": "894780DE7BA61E589ACF59ABC2D976E014399189AC215DE825687364504F7984",
-    "sizeBytes": 99301381
+    "url": "https://quantumrooster.github.io/HWM-Updates/releases/Headline-HWM-Service-v0.2.5.10.zip",
+    "sha256": "84E25C666AD5A668525E2AD1BD46309ED04DC19C752610E0551F8B32F4D2A732",
+    "sizeBytes": 99305999
   }
 }
