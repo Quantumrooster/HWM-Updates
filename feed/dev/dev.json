@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.8",
-  "publishedUtc": "2026-09-11T23:30:55.1591019Z",
+  "releaseVersion": "0.2.5.9",
+  "publishedUtc": "2026-09-13T00:32:58.1113083Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.8 contains service 0.2.5.7. HWM Terminal now uses adaptive burst polling: idle workstations remain at a five second terminal poll, but after a technician command is received that workstation switches to one second polling for five minutes and extends the burst after every command. This makes a live troubleshooting session feel close to immediate without forcing every managed workstation to poll Azure every second all day. Immediate service startup polling, terminal security, one-shot execution, output limits, command expiry, auditing, Mesh recovery, tray 1.0.0.6 and Managed Updater 0.1.3.0 are unchanged.",
+  "releaseNotes": "HWM 0.2.5.9 contains service 0.2.5.8. Antivirus reporting now uses Microsoft Defender active Normal mode and real time status before trusting a stale third party Windows Security Center registration. This fixes machines where ESET was removed but remained listed by Security Center. Terminal burst polling, Mesh recovery, tray 1.0.0.6 and Managed Updater 0.1.3.0 are unchanged.",
   "components": {
-    "hwmServiceVersion": "0.2.5.7",
+    "hwmServiceVersion": "0.2.5.8",
     "hwmTrayVersion": "1.0.0.6",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.5.8-DEV.zip",
-    "sha256": "C94773A615ED071AF5C10E249E2DBA1F1125EEC85C88EDEE2BD26D8ADA7BCC07",
-    "sizeBytes": 99301656
+    "url": "Headline-HWM-Service-v0.2.5.9-DEV.zip",
+    "sha256": "662EF24FBD3A718F23EA46A2EC54A454ADA28FF6AF996C695E8AEB1D82C4A10D",
+    "sizeBytes": 99301658
   }
 }
