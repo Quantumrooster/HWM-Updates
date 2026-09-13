@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for channel in dev pilot; do
+          for channel in dev pilot stable; do
             manifest="_site/$channel/$channel.json"
             [ -f "$manifest" ] || { echo "Missing $manifest" >&2; exit 1; }
             url=$(jq -r '.package.url' "$manifest")
