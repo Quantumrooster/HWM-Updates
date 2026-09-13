@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "channel": "dev",
   "releaseVersion": "0.2.5.10",
-  "publishedUtc": "2026-09-13T01:11:47.3801670Z",
+  "publishedUtc": "2026-09-13T01:39:49.8172451Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
@@ -14,7 +14,7 @@
   },
   "package": {
     "url": "Headline-HWM-Service-v0.2.5.10-DEV.zip",
-    "sha256": "84E25C666AD5A668525E2AD1BD46309ED04DC19C752610E0551F8B32F4D2A732",
-    "sizeBytes": 99305999
+    "sha256": "C7499483F0F49062C562AD0EA358161BEFD0DF68D30A4F823945BC619E6459E0",
+    "sizeBytes": 99306081
   }
 }
