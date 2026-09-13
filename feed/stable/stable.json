@@ -13,7 +13,7 @@
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.6-DEV.zip",
+    "url": "https://quantumrooster.github.io/HWM-Updates/stable/Headline-HWM-Service-v0.2.5.6-DEV.zip",
     "sha256": "894780DE7BA61E589ACF59ABC2D976E014399189AC215DE825687364504F7984",
     "sizeBytes": 99301381
   }
