@@ -1,5 +1,5 @@
 name: Sync Latest HWM DEV Release
-# Sync trigger for HWM 0.2.5.10 DEV fleet policy.
+# Sync trigger after the HWM 0.2.5.10 build fix.
 
 on:
   workflow_dispatch:
