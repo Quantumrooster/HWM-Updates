@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.10",
-  "publishedUtc": "2026-09-13T01:39:49.8172451Z",
+  "releaseVersion": "0.2.5.11",
+  "publishedUtc": "2026-09-14T22:27:36.0831508Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.10 contains service 0.2.5.9. Fixes stale ESET antivirus labels when Microsoft Defender is actively protecting the endpoint. After the updater verifies a successful service start, pilot workstations move to Stable and both pilot and stable workstations register a 15 minute SYSTEM update check. Existing updater mutex and maintenance window remain in effect. Terminal, Mesh recovery, tray 1.0.0.6 and updater binary remain unchanged.",
+  "releaseNotes": "HWM 0.2.5.11 contains service 0.2.5.10 and tray 1.0.0.7. Fixes the tray open crash caused by native WinForms handle recreation when ShowInTaskbar changed after the hidden UI handle had already been created. The tray now keeps its taskbar state fixed, preventing the repeated GDIObjectLeak and USER32 stack overflow failure seen on affected endpoints. Existing update verification, rollback, terminal and Mesh recovery behaviour remain unchanged.",
   "components": {
-    "hwmServiceVersion": "0.2.5.9",
-    "hwmTrayVersion": "1.0.0.6",
+    "hwmServiceVersion": "0.2.5.10",
+    "hwmTrayVersion": "1.0.0.7",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.5.10-DEV.zip",
-    "sha256": "C7499483F0F49062C562AD0EA358161BEFD0DF68D30A4F823945BC619E6459E0",
-    "sizeBytes": 99306081
+    "url": "Headline-HWM-Service-v0.2.5.11-DEV.zip",
+    "sha256": "E18949885E59EF701512D3D6D25749180069774B74862FC79D7649E7E912520E",
+    "sizeBytes": 99311249
   }
 }
