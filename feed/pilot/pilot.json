@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "pilot",
-  "releaseVersion": "0.2.5.10",
-  "publishedUtc": "2026-09-13T01:14:10.336Z",
+  "releaseVersion": "0.2.5.11",
+  "publishedUtc": "2026-09-14T22:28:55.5346910Z",
   "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "Fleet convergence release 0.2.5.10, service 0.2.5.9. Corrects stale ESET labels when Defender is active. Following verified installation, existing Pilot endpoints switch to Stable and Pilot and Stable endpoints gain a 15 minute scheduled updater check. Existing update verification and rollback remain in force.",
+  "releaseNotes": "HWM 0.2.5.11 fixes the workstation tray crash seen when opening HWM on affected endpoints. Tray 1.0.0.7 prevents WinForms from recreating the native window handle when ShowInTaskbar changes after startup, eliminating the repeated GDIObjectLeak and USER32 stack overflow 0xc00000fd failure. Service 0.2.5.10 is included. Existing updater verification, rollback, 15 minute checks, terminal and Mesh recovery behaviour remain unchanged.",
   "components": {
-    "hwmServiceVersion": "0.2.5.9",
-    "hwmTrayVersion": "1.0.0.6",
+    "hwmServiceVersion": "0.2.5.10",
+    "hwmTrayVersion": "1.0.0.7",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/releases/Headline-HWM-Service-v0.2.5.10.zip",
-    "sha256": "84E25C666AD5A668525E2AD1BD46309ED04DC19C752610E0551F8B32F4D2A732",
-    "sizeBytes": 99305999
+    "url": "https://quantumrooster.github.io/HWM-Updates/releases/Headline-HWM-Service-v0.2.5.11.zip",
+    "sha256": "1D7405CE0212D87B115845D159834B18FF3695A0E202DDBD258D307DEF4ECBCE",
+    "sizeBytes": 99311280
   }
 }
