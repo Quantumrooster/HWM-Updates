@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "stable",
-  "releaseVersion": "0.2.5.11",
-  "publishedUtc": "2026-09-14T22:28:55.5346910Z",
+  "releaseVersion": "0.2.5.12",
+  "publishedUtc": "2026-09-16T13:57:58.6542781Z",
   "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.11 fixes the workstation tray crash seen when opening HWM on affected endpoints. Tray 1.0.0.7 prevents WinForms from recreating the native window handle when ShowInTaskbar changes after startup, eliminating the repeated GDIObjectLeak and USER32 stack overflow 0xc00000fd failure. Service 0.2.5.10 is included. Existing updater verification, rollback, 15 minute checks, terminal and Mesh recovery behaviour remain unchanged.",
+  "releaseNotes": "HWM 0.2.5.12 contains service 0.2.5.10 and tray 1.0.0.8. Tray 1.0.0.8 fixes the remaining first-open USER32 stack overflow by deferring MainForm native handle creation until the window is actually shown, rather than creating the full hidden WinForms handle tree during tray-only startup. Extra UI crash breadcrumbs were added around handle creation and visibility transitions. Existing updater verification, rollback, terminal and Mesh recovery behaviour remain unchanged.",
   "components": {
     "hwmServiceVersion": "0.2.5.10",
-    "hwmTrayVersion": "1.0.0.7",
+    "hwmTrayVersion": "1.0.0.8",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/releases/Headline-HWM-Service-v0.2.5.11.zip",
-    "sha256": "1D7405CE0212D87B115845D159834B18FF3695A0E202DDBD258D307DEF4ECBCE",
-    "sizeBytes": 99311280
+    "url": "https://quantumrooster.github.io/HWM-Updates/releases/Headline-HWM-Service-v0.2.5.12.zip",
+    "sha256": "A73A784239A69D1D0F8E05B8D9B42F18E8772B6ED1ADB4E4A78B6C30182F7D12",
+    "sizeBytes": 99311508
   }
 }
