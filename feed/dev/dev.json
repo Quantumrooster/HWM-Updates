@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.11",
-  "publishedUtc": "2026-09-15T17:47:07.5187108Z",
+  "releaseVersion": "0.2.5.12",
+  "publishedUtc": "2026-09-16T13:04:51.4545750Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.11 contains service 0.2.5.10 and tray 1.0.0.7. Fixes the tray open crash caused by native WinForms handle recreation when ShowInTaskbar changed after the hidden UI handle had already been created. The tray now keeps its taskbar state fixed, preventing the repeated GDIObjectLeak and USER32 stack overflow failure seen on affected endpoints. Existing update verification, rollback, terminal and Mesh recovery behaviour remain unchanged.",
+  "releaseNotes": "HWM 0.2.5.12 contains service 0.2.5.10 and tray 1.0.0.8. Tray startup no longer forces the full WinForms MainForm native handle to be created while hidden. The first visible Show now performs normal native handle creation after the taskbar state is final, targeting the remaining USER32 stack overflow 0xc00000fd seen on 1.0.0.7. Extra first-show diagnostics are included. Existing update verification, rollback, terminal and Mesh recovery behaviour remain unchanged.",
   "components": {
     "hwmServiceVersion": "0.2.5.10",
-    "hwmTrayVersion": "1.0.0.7",
+    "hwmTrayVersion": "1.0.0.8",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.5.11-DEV.zip",
-    "sha256": "45E856A9D22D1DC2172E7F9064CA5C4498CA9AA90A74D73D8E0AD39F7A54D10D",
-    "sizeBytes": 99311208
+    "url": "Headline-HWM-Service-v0.2.5.12-DEV.zip",
+    "sha256": "B9DE04A58A90D34C6E66EF7A2157E8A27B92E43E07D35DA89CC0BBA8E2128E6F",
+    "sizeBytes": 99311522
   }
 }
