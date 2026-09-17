@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.12",
-  "publishedUtc": "2026-09-16T13:04:51.4545750Z",
+  "releaseVersion": "0.2.5.13",
+  "publishedUtc": "2026-09-17T17:50:35.6313903Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.12 contains service 0.2.5.10 and tray 1.0.0.8. Tray startup no longer forces the full WinForms MainForm native handle to be created while hidden. The first visible Show now performs normal native handle creation after the taskbar state is final, targeting the remaining USER32 stack overflow 0xc00000fd seen on 1.0.0.7. Extra first-show diagnostics are included. Existing update verification, rollback, terminal and Mesh recovery behaviour remain unchanged.",
+  "releaseNotes": "HWM 0.2.5.13 contains service 0.2.5.10 and tray 1.0.0.9. Diagnostics from tray 1.0.0.8 showed the first native MainForm handle was created successfully, but the first SetVisibleCore(true) never returned and the watchdog later restarted the tray. Tray 1.0.0.9 stages that first visible transition by showing an empty native form first, then reattaching the already-built UI tree only after the native show has completed. This targets the exact first-open hang boundary while preserving collected UI state. Existing ShowInTaskbar and Resize guards remain in place.",
   "components": {
     "hwmServiceVersion": "0.2.5.10",
-    "hwmTrayVersion": "1.0.0.8",
+    "hwmTrayVersion": "1.0.0.9",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.5.12-DEV.zip",
-    "sha256": "B9DE04A58A90D34C6E66EF7A2157E8A27B92E43E07D35DA89CC0BBA8E2128E6F",
-    "sizeBytes": 99311522
+    "url": "Headline-HWM-Service-v0.2.5.13-DEV.zip",
+    "sha256": "D6B28E3E88907E4AE0E0624E79042BB90BB9FBDA085E425101D982609F447028",
+    "sizeBytes": 99312285
   }
 }
