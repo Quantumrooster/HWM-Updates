@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "pilot",
-  "releaseVersion": "0.2.5.12",
-  "publishedUtc": "2026-09-16T13:57:58.6542781Z",
+  "releaseVersion": "0.2.5.13",
+  "publishedUtc": "2026-09-17T17:51:12.3981610Z",
   "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.12 contains service 0.2.5.10 and tray 1.0.0.8. Tray 1.0.0.8 fixes the remaining first-open USER32 stack overflow by deferring MainForm native handle creation until the window is actually shown, rather than creating the full hidden WinForms handle tree during tray-only startup. Extra UI crash breadcrumbs were added around handle creation and visibility transitions. Existing updater verification, rollback, terminal and Mesh recovery behaviour remain unchanged.",
+  "releaseNotes": "HWM 0.2.5.13 contains service 0.2.5.10 and tray 1.0.0.9. Diagnostics from tray 1.0.0.8 showed the first native MainForm handle was created successfully but the first SetVisibleCore(true) did not return, after which the watchdog restarted the tray and the next open succeeded. Tray 1.0.0.9 stages the first visible transition by making an empty native form visible first and then reattaching the already-built UI tree after native visibility has completed. This targets the exact observed first-open hang boundary while preserving collected UI state. Existing ShowInTaskbar and Resize guards, updater verification, rollback, terminal and Mesh recovery behaviour remain unchanged.",
   "components": {
     "hwmServiceVersion": "0.2.5.10",
-    "hwmTrayVersion": "1.0.0.8",
+    "hwmTrayVersion": "1.0.0.9",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/releases/Headline-HWM-Service-v0.2.5.12.zip",
-    "sha256": "A73A784239A69D1D0F8E05B8D9B42F18E8772B6ED1ADB4E4A78B6C30182F7D12",
-    "sizeBytes": 99311508
+    "url": "https://quantumrooster.github.io/HWM-Updates/releases/Headline-HWM-Service-v0.2.5.13.zip",
+    "sha256": "96A7F328D065A1AE772913A1D3B0C26CBD69C22932F08C37A429E6A1E23F5A59",
+    "sizeBytes": 99312297
   }
 }
