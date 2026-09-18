@@ -1,5 +1,5 @@
 name: Deploy HWM Update Feed
-# Release trigger for HWM 0.2.5.12
+# Release trigger for HWM 0.2.5.14
 
 on:
   push:
