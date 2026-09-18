@@ -19,7 +19,7 @@ permissions:
 env:
   PRIVATE_REPO: Quantumrooster/HWM
   PRIVATE_WORKFLOW: hwm-dev-release.yml
-  PRIVATE_BRANCH: feature/managed-updater-v2
+  PRIVATE_BRANCH: feature/defender-tier-reporting
 
 concurrency:
   group: hwm-dev-sync
