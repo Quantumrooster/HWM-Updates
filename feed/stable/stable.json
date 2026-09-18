@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "stable",
-  "releaseVersion": "0.2.5.13",
-  "publishedUtc": "2026-09-17T17:51:12.3981610Z",
+  "releaseVersion": "0.2.5.14",
+  "publishedUtc": "2026-09-18T04:16:54.4457075Z",
   "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.13 contains service 0.2.5.10 and tray 1.0.0.9. Diagnostics from tray 1.0.0.8 showed the first native MainForm handle was created successfully but the first SetVisibleCore(true) did not return, after which the watchdog restarted the tray and the next open succeeded. Tray 1.0.0.9 stages the first visible transition by making an empty native form visible first and then reattaching the already-built UI tree after native visibility has completed. This targets the exact observed first-open hang boundary while preserving collected UI state. Existing ShowInTaskbar and Resize guards, updater verification, rollback, terminal and Mesh recovery behaviour remain unchanged.",
+  "releaseNotes": "HWM 0.2.5.14 contains service 0.2.5.11 and tray 1.0.0.10. This release adds explicit Microsoft Defender endpoint reporting to the workstation heartbeat: antivirus product version, Defender running mode, MDE / EDR onboarding state, and Sense service state. MSP Operations can now distinguish ordinary Microsoft Defender Antivirus from an endpoint that is actually onboarded to Microsoft Defender for Endpoint. Existing updater verification, rollback, tray reliability, terminal, Mesh recovery, event health and workstation monitoring behaviour remain unchanged.",
   "components": {
-    "hwmServiceVersion": "0.2.5.10",
-    "hwmTrayVersion": "1.0.0.9",
+    "hwmServiceVersion": "0.2.5.11",
+    "hwmTrayVersion": "1.0.0.10",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/releases/Headline-HWM-Service-v0.2.5.13.zip",
-    "sha256": "96A7F328D065A1AE772913A1D3B0C26CBD69C22932F08C37A429E6A1E23F5A59",
-    "sizeBytes": 99312297
+    "url": "https://quantumrooster.github.io/HWM-Updates/releases/Headline-HWM-Service-v0.2.5.14.zip",
+    "sha256": "4C0E84AEBF2626B3D2699AD8F95FE19996170484514B13F8E9FD4FF2E2C6B5E6",
+    "sizeBytes": 99312518
   }
 }
