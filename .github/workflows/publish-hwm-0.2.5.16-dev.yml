@@ -1,4 +1,5 @@
 name: Publish HWM 0.2.5.16 DEV Hotfix
+# Republish after sync rollback guard
 
 on:
   workflow_dispatch:
