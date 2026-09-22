@@ -117,6 +117,7 @@ jobs:
           expected_name=$(jq -r '.package.url // empty' "$manifest")
           expected_hash=$(jq -r '.package.sha256 // empty' "$manifest" | tr '[:lower:]' '[:upper:]')
           expected_size=$(jq -r '.package.sizeBytes // empty' "$manifest")
+          candidate_release=$(jq -r '.releaseVersion // "0.0.0.0"' "$manifest")
           actual_name=$(basename "$package")
           actual_hash=$(sha256sum "$package" | awk '{print toupper($1)}')
           actual_size=$(stat -c%s "$package")
@@ -124,6 +125,17 @@ jobs:
           [ "$expected_name" = "$actual_name" ] || { echo 'Manifest package name mismatch.' >&2; exit 1; }
           [ "$expected_hash" = "$actual_hash" ] || { echo 'Manifest SHA256 mismatch.' >&2; exit 1; }
           [ "$expected_size" = "$actual_size" ] || { echo 'Manifest package size mismatch.' >&2; exit 1; }
+
+          current_release="0.0.0.0"
+          if [ -f feed/dev/dev.json ]; then
+            current_release=$(jq -r '.releaseVersion // "0.0.0.0"' feed/dev/dev.json)
+          fi
+
+          newest=$(printf '%s\n%s\n' "$current_release" "$candidate_release" | sort -V | tail -n1)
+          if [ "$newest" = "$current_release" ] && [ "$current_release" != "$candidate_release" ]; then
+            echo "Public DEV feed $current_release is newer than private artifact $candidate_release; preserving public DEV hotfix."
+            exit 0
+          fi
 
           mkdir -p feed/dev
           find feed/dev -maxdepth 1 -type f \( -name 'dev.json' -o -name 'Headline-HWM-Service-v*-DEV.zip' \) -delete
