@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.15",
-  "publishedUtc": "2026-09-22T06:53:29.9593929Z",
+  "releaseVersion": "0.2.5.16",
+  "publishedUtc": "2026-09-22T07:31:44.0786406Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM DEV 0.2.5.15 pairs the current stable service 0.2.5.11 with tray 1.0.0.11. The tray fixes the long-idle first-open crash by reusing one WinForms ToolTip instead of creating new ToolTip objects during repeated background cloud-status refreshes. Existing first-show and tray reliability protections remain unchanged.",
+  "releaseNotes": "HWM DEV 0.2.5.16 uses the exact current stable 0.2.5.14 source as its base, retaining the staged first-show, ShowInTaskbar and resize protections plus Defender endpoint reporting. Tray 1.0.0.12 adds the long-idle ToolTip leak fix by reusing a single WinForms ToolTip component throughout the tray process lifetime.",
   "components": {
     "hwmServiceVersion": "0.2.5.11",
-    "hwmTrayVersion": "1.0.0.11",
+    "hwmTrayVersion": "1.0.0.12",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.15-DEV.zip",
-    "sha256": "E0031FF70E3C3A0F6D418A7F12BE363791B6F512992303F4AC696E6EB26DCC87",
-    "sizeBytes": 99313315
+    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.16-DEV.zip",
+    "sha256": "613067BDD70F38635DC20A59B6562A966186C64A326CD7E64683B9BD59C3388E",
+    "sizeBytes": 99312796
   }
 }
