@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.14",
-  "publishedUtc": "2026-09-18T18:09:21.3520433Z",
+  "releaseVersion": "0.2.5.15",
+  "publishedUtc": "2026-09-22T06:53:29.9593929Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.13 contains service 0.2.5.10 and tray 1.0.0.9. Diagnostics from tray 1.0.0.8 showed the first native MainForm handle was created successfully, but the first SetVisibleCore(true) never returned and the watchdog later restarted the tray. Tray 1.0.0.9 stages that first visible transition by showing an empty native form first, then reattaching the already-built UI tree only after the native show has completed. This targets the exact first-open hang boundary while preserving collected UI state. Existing ShowInTaskbar and Resize guards remain in place.",
+  "releaseNotes": "HWM DEV 0.2.5.15 pairs the current stable service 0.2.5.11 with tray 1.0.0.11. The tray fixes the long-idle first-open crash by reusing one WinForms ToolTip instead of creating new ToolTip objects during repeated background cloud-status refreshes. Existing first-show and tray reliability protections remain unchanged.",
   "components": {
     "hwmServiceVersion": "0.2.5.11",
-    "hwmTrayVersion": "1.0.0.10",
+    "hwmTrayVersion": "1.0.0.11",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "Headline-HWM-Service-v0.2.5.14-DEV.zip",
-    "sha256": "90CD1A0C8649C44333731526B6A369EA75271FA1A8F9BB1808D96972C4182824",
-    "sizeBytes": 99312557
+    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.15-DEV.zip",
+    "sha256": "E0031FF70E3C3A0F6D418A7F12BE363791B6F512992303F4AC696E6EB26DCC87",
+    "sizeBytes": 99313315
   }
 }
