@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.18",
-  "publishedUtc": "2026-09-23T05:39:48.0713988Z",
+  "releaseVersion": "0.2.5.19",
+  "publishedUtc": "2026-09-23T07:16:32.5408479Z",
   "urgent": false,
   "allowDowngrade": false,
-  "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM DEV 0.2.5.18 adds standalone Safe Cleanup bundled with Watcher. The dashboard action no longer requires the desktop HCS Service Tool installer. Service 0.2.5.13 and tray 1.0.0.13 preserve update inventory and tray idle fixes. Cleanup targets temporary files older than seven days, skips locked or linked items, and reports results and free space. DEV validation only.",
+  "minimumUpdaterVersion": "0.1.4.0",
+  "releaseNotes": "DEV 0.2.5.19 validates Managed Updater 0.1.4.0 against a running tray. Service remains 0.2.5.13 with standalone Safe Cleanup; tray 1.0.0.14 triggers a real replacement from 1.0.0.13. Requires the new updater bootstrap. No Pilot or Stable promotion.",
   "components": {
     "hwmServiceVersion": "0.2.5.13",
-    "hwmTrayVersion": "1.0.0.13",
+    "hwmTrayVersion": "1.0.0.14",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.18-DEV.zip",
-    "sha256": "D23A5C661B551FFAC40854D19D8872A924DDA85EB542F990CA8A7E2D87F3943F",
-    "sizeBytes": 99313374
+    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.19-DEV.zip",
+    "sha256": "1919ABE7189DAF87A8E2DDB6DF799E14853D78D9BC3DA2B9484CDFE8B313EBFE",
+    "sizeBytes": 99313335
   }
 }

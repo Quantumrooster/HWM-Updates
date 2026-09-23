@@ -1,0 +1,9 @@
+{
+  "updaterVersion": "0.1.4.0",
+  "sourceCommit": "c0bcbfefc1901ca3f6c888cf4d8db669a3097060",
+  "binarySha256": "C1604A03F77831EC82723726C0B7425543BE9397E7C2DC37B22C8FC94D3AB5F9",
+  "packageUrl": "https://quantumrooster.github.io/HWM-Updates/dev/updater/0.1.4.0/HeadlineManagedUpdater-0.1.4.0-DEV.zip",
+  "packageSha256": "42C82D19952251FA875AE7681A153C686D2010E015141258D942D2962B68D2AA",
+  "packageSizeBytes": 31247009,
+  "targetComputer": "HCSPC2025"
+}
