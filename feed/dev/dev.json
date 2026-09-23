@@ -1,20 +1,21 @@
 {
+  "sourceCommit": "0e3b2e7e3349970cff7f7fbaca9291600492acbe",
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.19",
-  "publishedUtc": "2026-09-23T07:16:32.5408479Z",
+  "releaseVersion": "0.2.5.20",
+  "publishedUtc": "2026-09-23T18:10:01.7027104Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.4.0",
-  "releaseNotes": "DEV 0.2.5.19 validates Managed Updater 0.1.4.0 against a running tray. Service remains 0.2.5.13 with standalone Safe Cleanup; tray 1.0.0.14 triggers a real replacement from 1.0.0.13. Requires the new updater bootstrap. No Pilot or Stable promotion.",
+  "releaseNotes": "Inventory-only DEV 0.2.5.20: service 0.2.5.14, tray 1.0.0.14; detailed Windows Update and Office/Edge/Chrome/Adobe inventory. Preserves Safe Cleanup and Managed Updater fixes. Minimum updater 0.1.4.0. No remote update/install actions. HCSPC2025 validation before API production deployment.",
   "components": {
-    "hwmServiceVersion": "0.2.5.13",
+    "hwmServiceVersion": "0.2.5.14",
     "hwmTrayVersion": "1.0.0.14",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.19-DEV.zip",
-    "sha256": "1919ABE7189DAF87A8E2DDB6DF799E14853D78D9BC3DA2B9484CDFE8B313EBFE",
-    "sizeBytes": 99313335
+    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.20-DEV.zip",
+    "sha256": "3CB1C1555F35BE07815F21D53A41D122397F92897822CAF326EB015715F47183",
+    "sizeBytes": 99313253
   }
 }
