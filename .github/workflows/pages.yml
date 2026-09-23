@@ -1,5 +1,5 @@
 name: Deploy HWM Update Feed
-# Release trigger for HWM 0.2.5.16 DEV hotfix
+# Release trigger for HWM 0.2.5.17 DEV inventory build
 
 on:
   push:
