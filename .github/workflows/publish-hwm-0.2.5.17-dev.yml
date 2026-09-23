@@ -1,0 +1,120 @@
+name: Publish HWM 0.2.5.17 DEV Hotfix
+# Republish after sync rollback guard
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/publish-hwm-0.2.5.17-dev.yml'
+
+permissions:
+  contents: write
+
+env:
+  RELEASE_VERSION: '0.2.5.17'
+  SERVICE_VERSION: '0.2.5.12'
+  TRAY_VERSION: '1.0.0.12'
+  SOURCE_SHA: '33cd2a7b2ed06f6117653c89671f215a8bdb98e0'
+
+jobs:
+  publish-dev:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout public update feed
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout exact HWM hotfix source
+        uses: actions/checkout@v4
+        with:
+          repository: Quantumrooster/HWM
+          ref: ${{ env.SOURCE_SHA }}
+          token: ${{ secrets.HWM_PRIVATE_READ_TOKEN }}
+          path: _hwm
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build DEV package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          dotnet publish _hwm/ServiceProject/HeadlineWorkstationService.csproj -c Release -r win-x64 --self-contained true -o _out/service
+          dotnet publish _hwm/HeadlineWorkstationMonitor/HeadlineWorkstationMonitor.csproj -c Release -r win-x64 --self-contained true -o _out/tray
+
+          $serviceExe = Join-Path $PWD '_out/service/HeadlineWorkstationService.exe'
+          $trayExe = Join-Path $PWD '_out/tray/HeadlineWorkstationMonitor.exe'
+
+          if (-not (Test-Path $serviceExe)) { throw 'Published HWM service executable not found.' }
+          if (-not (Test-Path $trayExe)) { throw 'Published HWM tray executable not found.' }
+
+          $serviceVersion = (Get-Item $serviceExe).VersionInfo.FileVersion
+          $trayVersion = (Get-Item $trayExe).VersionInfo.FileVersion
+
+          if ($serviceVersion -notlike "$env:SERVICE_VERSION*") { throw "Unexpected HWM service version: $serviceVersion" }
+          if ($trayVersion -notlike "$env:TRAY_VERSION*") { throw "Unexpected HWM tray version: $trayVersion" }
+
+          $devDir = Join-Path $PWD 'feed/dev'
+          New-Item -ItemType Directory -Path $devDir -Force | Out-Null
+
+          $zipName = "Headline-HWM-Service-v$env:RELEASE_VERSION-DEV.zip"
+          $zipPath = Join-Path $devDir $zipName
+          Compress-Archive -Path @($serviceExe, $trayExe) -DestinationPath $zipPath -CompressionLevel Optimal -Force
+
+          $hash = (Get-FileHash $zipPath -Algorithm SHA256).Hash.ToUpperInvariant()
+          $size = (Get-Item $zipPath).Length
+          if ($size -ge 104857600) { throw "DEV release package is too large for GitHub: $size bytes" }
+
+          $manifest = [ordered]@{
+            schemaVersion = 1
+            channel = 'dev'
+            releaseVersion = $env:RELEASE_VERSION
+            publishedUtc = (Get-Date).ToUniversalTime().ToString('o')
+            urgent = $false
+            allowDowngrade = $false
+            minimumUpdaterVersion = '0.1.2.0'
+            releaseNotes = 'HWM DEV 0.2.5.17 is the inventory-first update-management build. Service 0.2.5.12 reports detailed pending Windows Update inventory plus installed Microsoft 365 Apps, Edge, Chrome and Adobe Acrobat or Reader versions, channels and updater state. Tray 1.0.0.12 retains the long-idle ToolTip leak fix. This DEV build is inventory-only: no remote update installation actions are enabled yet.'
+            components = [ordered]@{
+              hwmServiceVersion = $env:SERVICE_VERSION
+              hwmTrayVersion = $env:TRAY_VERSION
+              hcsAutomationVersion = ''
+            }
+            package = [ordered]@{
+              url = "https://quantumrooster.github.io/HWM-Updates/dev/$zipName"
+              sha256 = $hash
+              sizeBytes = $size
+            }
+          }
+
+          $manifest | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $devDir 'dev.json') -Encoding UTF8
+
+          Write-Host "Built DEV HWM $env:RELEASE_VERSION"
+          Write-Host "Source: $env:SOURCE_SHA"
+          Write-Host "Service: $serviceVersion"
+          Write-Host "Tray: $trayVersion"
+          Write-Host "SHA256: $hash"
+          Write-Host "Size: $size"
+
+      - name: Commit DEV release
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git config user.name 'Headline HWM Release Bot'
+          git config user.email '248761542+Quantumrooster@users.noreply.github.com'
+          git add "feed/dev/Headline-HWM-Service-v$env:RELEASE_VERSION-DEV.zip" feed/dev/dev.json
+
+          if (git diff --cached --quiet) {
+            Write-Host 'DEV release is already published.'
+            exit 0
+          }
+
+          git commit -m "release: publish HWM $env:RELEASE_VERSION to DEV"
+          git pull --rebase origin main
+          git push origin HEAD:main
