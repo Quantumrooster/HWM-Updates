@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.17",
-  "publishedUtc": "2026-09-23T02:12:31.1077920Z",
+  "releaseVersion": "0.2.5.18",
+  "publishedUtc": "2026-09-23T05:39:48.0713988Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM DEV 0.2.5.17 is the inventory-first update-management build. Service 0.2.5.12 reports detailed pending Windows Update inventory plus installed Microsoft 365 Apps, Edge, Chrome and Adobe Acrobat or Reader versions, channels and updater state. Tray 1.0.0.12 retains the long-idle ToolTip leak fix. This DEV build is inventory-only: no remote update installation actions are enabled yet.",
+  "releaseNotes": "HWM DEV 0.2.5.18 adds standalone Safe Cleanup bundled with Watcher. The dashboard action no longer requires the desktop HCS Service Tool installer. Service 0.2.5.13 and tray 1.0.0.13 preserve update inventory and tray idle fixes. Cleanup targets temporary files older than seven days, skips locked or linked items, and reports results and free space. DEV validation only.",
   "components": {
-    "hwmServiceVersion": "0.2.5.12",
-    "hwmTrayVersion": "1.0.0.12",
+    "hwmServiceVersion": "0.2.5.13",
+    "hwmTrayVersion": "1.0.0.13",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.17-DEV.zip",
-    "sha256": "BA3B326716BC0C03BBD249C71F0815ED0F22D840A396E22B1B03282DE859BA99",
-    "sizeBytes": 99312947
+    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.18-DEV.zip",
+    "sha256": "D23A5C661B551FFAC40854D19D8872A924DDA85EB542F990CA8A7E2D87F3943F",
+    "sizeBytes": 99313374
   }
 }
