@@ -1,0 +1,248 @@
+name: Publish HWM 0.2.5.19 DEV Updater Lock Fix
+# Updater 0.1.4.0 bootstrap and a tray-only version change for live validation.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/publish-hwm-0.2.5.19-dev.yml'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+env:
+  RELEASE_VERSION: '0.2.5.19'
+  SERVICE_VERSION: '0.2.5.13'
+  TRAY_VERSION: '1.0.0.14'
+  SOURCE_SHA: 'c0bcbfefc1901ca3f6c888cf4d8db669a3097060'
+
+jobs:
+  publish-dev:
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout public update feed
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Checkout exact HWM hotfix source
+        uses: actions/checkout@v4
+        with:
+          repository: Quantumrooster/HWM
+          ref: ${{ env.SOURCE_SHA }}
+          token: ${{ secrets.HWM_PRIVATE_READ_TOKEN }}
+          path: _hwm
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Validate standalone cleanup in Windows PowerShell 5.1
+        shell: powershell
+        run: ./_hwm/tests/Test-SafeCleanup.ps1
+
+      - name: Run Windows updater lock regression tests
+        shell: pwsh
+        run: |
+          dotnet build _hwm/tests/TrayFixture/TrayFixture.csproj -c Release -o _out/tray-fixture
+          if ($LASTEXITCODE -ne 0) { throw 'Tray fixture build failed.' }
+          dotnet run --project _hwm/tests/UpdaterLockTests/UpdaterLockTests.csproj -c Release -- _out/tray-fixture
+          if ($LASTEXITCODE -ne 0) { throw 'Updater regression tests failed.' }
+
+      - name: Build DEV package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          dotnet publish _hwm/ServiceProject/HeadlineWorkstationService.csproj -c Release -r win-x64 --self-contained true -o _out/service
+          if ($LASTEXITCODE -ne 0) { throw 'Service publish failed.' }
+          dotnet publish _hwm/HeadlineWorkstationMonitor/HeadlineWorkstationMonitor.csproj -c Release -r win-x64 --self-contained true -o _out/tray
+
+          if ($LASTEXITCODE -ne 0) { throw 'Tray publish failed.' }
+
+          $serviceExe = Join-Path $PWD '_out/service/HeadlineWorkstationService.exe'
+          $trayExe = Join-Path $PWD '_out/tray/HeadlineWorkstationMonitor.exe'
+
+          if (-not (Test-Path $serviceExe)) { throw 'Published HWM service executable not found.' }
+          if (-not (Test-Path $trayExe)) { throw 'Published HWM tray executable not found.' }
+
+          $serviceVersion = (Get-Item $serviceExe).VersionInfo.FileVersion
+          $trayVersion = (Get-Item $trayExe).VersionInfo.FileVersion
+
+          if ($serviceVersion -notlike "$env:SERVICE_VERSION*") { throw "Unexpected HWM service version: $serviceVersion" }
+          if ($trayVersion -notlike "$env:TRAY_VERSION*") { throw "Unexpected HWM tray version: $trayVersion" }
+
+          $devDir = Join-Path $PWD 'feed/dev'
+          New-Item -ItemType Directory -Path $devDir -Force | Out-Null
+
+          $zipName = "Headline-HWM-Service-v$env:RELEASE_VERSION-DEV.zip"
+          $zipPath = Join-Path $devDir $zipName
+          Compress-Archive -Path @($serviceExe, $trayExe) -DestinationPath $zipPath -CompressionLevel Optimal -Force
+
+          $hash = (Get-FileHash $zipPath -Algorithm SHA256).Hash.ToUpperInvariant()
+          $size = (Get-Item $zipPath).Length
+          if ($size -ge 104857600) { throw "DEV release package is too large for GitHub: $size bytes" }
+
+          $manifest = [ordered]@{
+            schemaVersion = 1
+            channel = 'dev'
+            releaseVersion = $env:RELEASE_VERSION
+            publishedUtc = (Get-Date).ToUniversalTime().ToString('o')
+            urgent = $false
+            allowDowngrade = $false
+            minimumUpdaterVersion = '0.1.4.0'
+            releaseNotes = 'DEV 0.2.5.19 validates Managed Updater 0.1.4.0 against a running tray. Service remains 0.2.5.13 with standalone Safe Cleanup; tray 1.0.0.14 triggers a real replacement from 1.0.0.13. Requires the new updater bootstrap. No Pilot or Stable promotion.'
+            components = [ordered]@{
+              hwmServiceVersion = $env:SERVICE_VERSION
+              hwmTrayVersion = $env:TRAY_VERSION
+              hcsAutomationVersion = ''
+            }
+            package = [ordered]@{
+              url = "https://quantumrooster.github.io/HWM-Updates/dev/$zipName"
+              sha256 = $hash
+              sizeBytes = $size
+            }
+          }
+
+          $manifest | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $devDir 'dev.json') -Encoding UTF8
+
+          Write-Host "Built DEV HWM $env:RELEASE_VERSION"
+          Write-Host "Source: $env:SOURCE_SHA"
+          Write-Host "Service: $serviceVersion"
+          Write-Host "Tray: $trayVersion"
+          Write-Host "SHA256: $hash"
+          Write-Host "Size: $size"
+
+
+      - name: Build verified DEV updater bootstrap
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          dotnet publish _hwm/HeadlineManagedUpdater/HeadlineManagedUpdater.csproj -c Release -r win-x64 --self-contained true -o _out/updater
+          if ($LASTEXITCODE -ne 0) { throw 'Updater publish failed.' }
+          $exe = Join-Path $PWD '_out/updater/HeadlineManagedUpdater.exe'
+          if ((Get-Item $exe).VersionInfo.FileVersion -ne '0.1.4.0') { throw 'Unexpected updater version.' }
+          $exeHash = (Get-FileHash $exe -Algorithm SHA256).Hash
+          $stage = Join-Path $PWD '_out/updater-bootstrap'
+          New-Item -ItemType Directory -Path $stage -Force | Out-Null
+          Copy-Item $exe (Join-Path $stage 'HeadlineManagedUpdater.exe')
+          $script = Get-Content '_hwm/deploy/DEV/Install-Updater-0.1.4.0-DEV.ps1' -Raw
+          if (-not $script.Contains('__UPDATER_SHA256__')) { throw 'Installer digest placeholder missing.' }
+          $script.Replace('__UPDATER_SHA256__', $exeHash) | Set-Content (Join-Path $stage 'Install-Updater-0.1.4.0-DEV.ps1') -Encoding UTF8
+          $tokens = $null; $errors = $null
+          $null = [Management.Automation.Language.Parser]::ParseFile((Join-Path $stage 'Install-Updater-0.1.4.0-DEV.ps1'), [ref]$tokens, [ref]$errors)
+          if ($errors.Count) { throw ($errors | Out-String) }
+          $destination = Join-Path $PWD 'feed/dev/updater/0.1.4.0'
+          New-Item -ItemType Directory -Path $destination -Force | Out-Null
+          $zip = Join-Path $destination 'HeadlineManagedUpdater-0.1.4.0-DEV.zip'
+          Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zip -CompressionLevel Optimal
+          $zipHash = (Get-FileHash $zip -Algorithm SHA256).Hash
+          $size = (Get-Item $zip).Length
+          if ($size -ge 104857600) { throw 'Updater bootstrap exceeds GitHub file size limit.' }
+          [ordered]@{
+            updaterVersion = '0.1.4.0'
+            sourceCommit = $env:SOURCE_SHA
+            binarySha256 = $exeHash
+            packageUrl = 'https://quantumrooster.github.io/HWM-Updates/dev/updater/0.1.4.0/HeadlineManagedUpdater-0.1.4.0-DEV.zip'
+            packageSha256 = $zipHash
+            packageSizeBytes = $size
+            targetComputer = 'HCSPC2025'
+          } | ConvertTo-Json | Set-Content (Join-Path $destination 'manifest.json') -Encoding UTF8
+          Write-Host "Updater package SHA256: $zipHash"
+          Write-Host "Updater binary SHA256: $exeHash"
+
+      - name: Commit DEV release
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git fetch origin main
+          if ($LASTEXITCODE -ne 0) { throw 'Could not refresh remote feed state.' }
+          $remoteJson = git show origin/main:feed/dev/dev.json
+          if ($LASTEXITCODE -ne 0) { throw 'Could not read existing DEV manifest.' }
+          $remoteVersion = [version](($remoteJson -join "`n" | ConvertFrom-Json).releaseVersion)
+          if ($remoteVersion -ge [version]$env:RELEASE_VERSION) {
+            throw "DEV already contains $remoteVersion; refusing to overwrite an equal or newer release."
+          }
+          git config user.name 'Headline HWM Release Bot'
+          git config user.email '248761542+Quantumrooster@users.noreply.github.com'
+          git add "feed/dev/Headline-HWM-Service-v$env:RELEASE_VERSION-DEV.zip" feed/dev/dev.json feed/dev/updater/0.1.4.0
+
+          if (git diff --cached --quiet) {
+            Write-Host 'DEV release is already published.'
+            exit 0
+          }
+
+          git commit -m "release: publish HWM $env:RELEASE_VERSION to DEV"
+          git pull --rebase origin main
+          if ($LASTEXITCODE -ne 0) { throw 'Feed rebase failed.' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE -ne 0) { throw 'Feed push failed.' }
+
+  deploy-pages:
+    needs: publish-dev
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout public feed
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Prepare site
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site
+          cp -R feed/. _site/
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Headline HWM Update Feed</title></head>
+          <body><h1>Headline HWM Update Feed</h1><p>Managed update service for Headline Workstation Monitor.</p></body></html>
+          HTML
+
+      - name: Validate manifests and published packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ "$(jq -r '.releaseVersion' _site/dev/dev.json)" = "$RELEASE_VERSION" ] || { echo 'DEV manifest moved unexpectedly.' >&2; exit 1; }
+          updater_manifest="_site/dev/updater/0.1.4.0/manifest.json"
+          updater_package="_site/dev/updater/0.1.4.0/HeadlineManagedUpdater-0.1.4.0-DEV.zip"
+          [ "$(stat -c%s "$updater_package")" = "$(jq -r '.packageSizeBytes' "$updater_manifest")" ] || exit 1
+          [ "$(sha256sum "$updater_package" | cut -d' ' -f1 | tr '[:lower:]' '[:upper:]')" = "$(jq -r '.packageSha256' "$updater_manifest")" ] || exit 1
+          for channel in dev pilot stable; do
+            manifest="_site/$channel/$channel.json"
+            [ -f "$manifest" ] || { echo "Missing $manifest" >&2; exit 1; }
+            url=$(jq -r '.package.url' "$manifest")
+            case "$url" in
+              https://quantumrooster.github.io/HWM-Updates/*)
+                package="_site/${url#https://quantumrooster.github.io/HWM-Updates/}" ;;
+              http://*|https://*)
+                echo "Unexpected external package URL in $manifest: $url" >&2; exit 1 ;;
+              *)
+                package="_site/$channel/$url" ;;
+            esac
+            [ -f "$package" ] || { echo "Missing package for $manifest: $package" >&2; exit 1; }
+            expected_size=$(jq -r '.package.sizeBytes' "$manifest")
+            expected_hash=$(jq -r '.package.sha256 | ascii_upcase' "$manifest")
+            [ "$(stat -c%s "$package")" = "$expected_size" ] || { echo "Size mismatch: $package" >&2; exit 1; }
+            [ "$(sha256sum "$package" | cut -d' ' -f1 | tr '[:lower:]' '[:upper:]')" = "$expected_hash" ] || { echo "SHA256 mismatch: $package" >&2; exit 1; }
+          done
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
