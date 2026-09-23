@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.16",
-  "publishedUtc": "2026-09-22T10:35:14.4789327Z",
+  "releaseVersion": "0.2.5.17",
+  "publishedUtc": "2026-09-23T02:12:31.1077920Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM DEV 0.2.5.16 uses the exact current stable 0.2.5.14 source as its base, retaining the staged first-show, ShowInTaskbar and resize protections plus Defender endpoint reporting. Tray 1.0.0.12 adds the long-idle ToolTip leak fix by reusing a single WinForms ToolTip component throughout the tray process lifetime.",
+  "releaseNotes": "HWM DEV 0.2.5.17 is the inventory-first update-management build. Service 0.2.5.12 reports detailed pending Windows Update inventory plus installed Microsoft 365 Apps, Edge, Chrome and Adobe Acrobat or Reader versions, channels and updater state. Tray 1.0.0.12 retains the long-idle ToolTip leak fix. This DEV build is inventory-only: no remote update installation actions are enabled yet.",
   "components": {
-    "hwmServiceVersion": "0.2.5.11",
+    "hwmServiceVersion": "0.2.5.12",
     "hwmTrayVersion": "1.0.0.12",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.16-DEV.zip",
-    "sha256": "71251BEFE356A8A29DE2DECD181F2DAC405C23681A1CB0A27142D7A63CCC6CE0",
-    "sizeBytes": 99312796
+    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.17-DEV.zip",
+    "sha256": "BA3B326716BC0C03BBD249C71F0815ED0F22D840A396E22B1B03282DE859BA99",
+    "sizeBytes": 99312947
   }
 }
