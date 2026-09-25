@@ -1,21 +1,21 @@
 {
-  "sourceCommit": "e899b6555818de47fb44bb311d3bf85568ec5d16",
+  "sourceCommit": "f80bcf601846b36e7a5059c53b0d774b420cdbab",
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.21",
-  "publishedUtc": "2026-09-25T20:39:37.4401367Z",
+  "releaseVersion": "0.2.5.22",
+  "publishedUtc": "2026-09-25T20:50:22.6165954Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.4.0",
-  "releaseNotes": "Intune enrollment and update ownership telemetry added. Read-only hardware/reporting inventory; standalone maintenance pilot is not deployed. Inventory-only DEV 0.2.5.21: service 0.2.5.16, tray 1.0.0.14; detailed Windows Update and Office/Edge/Chrome/Adobe inventory. Preserves Safe Cleanup and Managed Updater fixes. Minimum updater 0.1.4.0. No remote update/install actions. HCSPC2025 validation before API production deployment.",
+  "releaseNotes": "Intune enrollment and update ownership telemetry added. Read-only hardware/reporting inventory; standalone maintenance pilot is not deployed. Inventory-only DEV 0.2.5.22: service 0.2.5.17, tray 1.0.0.14; detailed Windows Update and Office/Edge/Chrome/Adobe inventory. Preserves Safe Cleanup and Managed Updater fixes. Minimum updater 0.1.4.0. No remote update/install actions. HCSPC2025 validation before API production deployment.",
   "components": {
-    "hwmServiceVersion": "0.2.5.16",
+    "hwmServiceVersion": "0.2.5.17",
     "hwmTrayVersion": "1.0.0.14",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.21-DEV.zip",
-    "sha256": "9DBB908723D6C57E8E9436A2828394CBE979F97B25397EF84D863763A881B948",
-    "sizeBytes": 99314862
+    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.22-DEV.zip",
+    "sha256": "7215D0B61B86A8C27BEFF439EE1B335727E115E7EA99B249743E81EDAC06E605",
+    "sizeBytes": 99314828
   }
 }
