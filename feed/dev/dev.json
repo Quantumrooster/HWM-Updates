@@ -1,21 +1,21 @@
 {
-  "sourceCommit": "102d8600bee09f5056f45ed8c72eb82426544c81",
+  "sourceCommit": "f16a09349b42c4032b28805021bf6864a40f1411",
   "schemaVersion": 1,
   "channel": "dev",
-  "releaseVersion": "0.2.5.23",
-  "publishedUtc": "2026-09-25T21:49:32.6859648Z",
+  "releaseVersion": "0.2.5.24",
+  "publishedUtc": "2026-09-25T22:17:05.6009204Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.4.0",
-  "releaseNotes": "Adds Intune enrolled Yes/No/Unknown beneath Join Type in the local tray Organisation card. Existing Intune enrollment and update ownership telemetry preserved. Read-only hardware/reporting inventory; standalone maintenance pilot is not deployed. Inventory-only DEV 0.2.5.23: service 0.2.5.17, tray 1.0.0.15; detailed Windows Update and Office/Edge/Chrome/Adobe inventory. Preserves Safe Cleanup and Managed Updater fixes. Minimum updater 0.1.4.0. No remote update/install actions. HCSPC2025 validation before API production deployment.",
+  "releaseNotes": "Fixes clipped laptop layout with readable card heights, scrolling and narrow-window stacking. Retains the Intune enrollment row. Existing Intune enrollment and update ownership telemetry preserved. Read-only hardware/reporting inventory; standalone maintenance pilot is not deployed. Inventory-only DEV 0.2.5.24: service 0.2.5.17, tray 1.0.0.16; detailed Windows Update and Office/Edge/Chrome/Adobe inventory. Preserves Safe Cleanup and Managed Updater fixes. Minimum updater 0.1.4.0. No remote update/install actions. HCSPC2025 validation before API production deployment.",
   "components": {
     "hwmServiceVersion": "0.2.5.17",
-    "hwmTrayVersion": "1.0.0.15",
+    "hwmTrayVersion": "1.0.0.16",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.23-DEV.zip",
-    "sha256": "C0E62933932D393CFC401D1C467BF781A53D7D42333EF01764FF6CAED4715259",
-    "sizeBytes": 99320705
+    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.24-DEV.zip",
+    "sha256": "F57939A20A1074FC9C46642701BC2D890C375349B376F444589BFCA5E1EB4324",
+    "sizeBytes": 99323725
   }
 }
