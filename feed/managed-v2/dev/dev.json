@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "2af1c30b978c5647929d41e290730f034a34c62e",
+  "sourceCommit": "b147ae2711da99cb1bb05702d82376944e6b9bdd",
   "channel": "dev",
-  "releaseVersion": "0.2.5.26",
-  "publishedUtc": "2026-09-26T01:36:30.0228843Z",
+  "releaseVersion": "0.2.5.28",
+  "publishedUtc": "2026-09-26T02:17:31.0283265Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "Modern DEV canary after verified updater migration. Service 0.2.5.18 and tray 1.0.0.16. Intune ownership and inventory retained; no fleet patch actions enabled.",
+  "releaseNotes": "Modern DEV canary after verified updater migration. Service 0.2.5.19 and tray 1.0.0.16. Intune ownership and inventory retained; no fleet patch actions enabled.",
   "components": {
-    "hwmTrayVersion": "1.0.0.16",
     "hcsAutomationVersion": "",
-    "hwmServiceVersion": "0.2.5.18"
+    "hwmTrayVersion": "1.0.0.16",
+    "hwmServiceVersion": "0.2.5.19"
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/dev/Headline-HWM-Service-v0.2.5.26-DEV.zip",
-    "sha256": "F47CA26F999A0E42F520253F65DCD1F73B42CA1D0885CC3F3757783C9132BE37",
-    "sizeBytes": 99323558
+    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/dev/Headline-HWM-Service-v0.2.5.28-DEV.zip",
+    "sha256": "C4AB4AD4AB0B6B27A3BFBBAE385E38267FB5287B35410BA9303F1600B0E040DE",
+    "sizeBytes": 99323389
   }
 }
