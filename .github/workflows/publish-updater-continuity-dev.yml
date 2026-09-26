@@ -1,0 +1,125 @@
+name: Publish updater continuity DEV canary
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: updater-continuity-dev-publish
+  cancel-in-progress: false
+env:
+  SOURCE_SHA: '2af1c30b978c5647929d41e290730f034a34c62e'
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Quantumrooster/HWM
+          ref: ${{ env.SOURCE_SHA }}
+          token: ${{ secrets.HWM_PRIVATE_READ_TOKEN }}
+          path: _hwm
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build verified-source candidates
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          dotnet run --project _hwm/tests/InventoryContractTests -c Release
+          if ($LASTEXITCODE) { throw 'Inventory checks failed' }
+          dotnet run --project _hwm/tests/TrayLayoutChecks -c Release
+          if ($LASTEXITCODE) { throw 'Tray layout checks failed' }
+          dotnet publish _hwm/ServiceProject/HeadlineWorkstationService.csproj -c Release -o _out/service
+          if ($LASTEXITCODE) { throw 'Service build failed' }
+          dotnet publish _hwm/HeadlineWorkstationMonitor/HeadlineWorkstationMonitor.csproj -c Release -o _out/tray
+          if ($LASTEXITCODE) { throw 'Tray build failed' }
+          dotnet publish _hwm/HeadlineManagedUpdater/HeadlineManagedUpdater.csproj -c Release -o _out/updater
+          if ($LASTEXITCODE) { throw 'Updater build failed' }
+      - name: Create immutable bridge, modern package and updater catalog
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $oldDev=Get-Content feed/dev/dev.json -Raw | ConvertFrom-Json
+          if ([version]$oldDev.releaseVersion -ge [version]'0.2.5.25') { throw 'DEV has already advanced; review instead of overwriting.' }
+          $service='_out/service/HeadlineWorkstationService.exe'
+          $tray='_out/tray/HeadlineWorkstationMonitor.exe'
+          $updater='_out/updater/HeadlineManagedUpdater.exe'
+          foreach ($pair in @(@($service,'0.2.5.18'),@($tray,'1.0.0.16'),@($updater,'0.1.5.0'))) {
+            if ((Get-Item $pair[0]).VersionInfo.FileVersion -ne $pair[1]) { throw "Wrong component version: $($pair[0])" }
+          }
+          $base='https://quantumrooster.github.io/HWM-Updates'
+          $bridge='feed/dev/Headline-HWM-Bridge-v0.2.5.25-DEV.zip'
+          $modern='feed/managed-v2/dev/Headline-HWM-Service-v0.2.5.26-DEV.zip'
+          $updaterPath='feed/updater/dev/0.1.5.0/HeadlineManagedUpdater.exe'
+          foreach ($path in @($bridge,$modern,$updaterPath,'feed/managed-v2/dev/dev.json','feed/updater/dev.json')) {
+            if (Test-Path -LiteralPath $path) { throw "Immutable/new canary path already exists: $path" }
+            New-Item -ItemType Directory -Path (Split-Path -Parent $path) -Force | Out-Null
+          }
+          Compress-Archive -Path $service -DestinationPath $bridge -CompressionLevel Optimal
+          Compress-Archive -Path @($service,$tray) -DestinationPath $modern -CompressionLevel Optimal
+          Copy-Item -LiteralPath $updater -Destination $updaterPath
+          foreach ($path in @($bridge,$modern,$updaterPath)) {
+            if ((Get-Item $path).Length -ge 104857600) { throw "Package too large: $path" }
+          }
+          function Package($path) { return [ordered]@{url=($base+'/'+$path.Substring(5));sha256=(Get-FileHash $path -Algorithm SHA256).Hash;sizeBytes=(Get-Item $path).Length} }
+          $bridgeManifest=[ordered]@{schemaVersion=1;sourceCommit=$env:SOURCE_SHA;channel='dev';releaseVersion='0.2.5.25';publishedUtc=[datetime]::UtcNow.ToString('o');urgent=$false;allowDowngrade=$false;minimumUpdaterVersion='0.1.2.0';releaseNotes='DEV canary service-only bridge. Service 0.2.5.18; tray and HCS untouched. Updater maintenance remains explicitly gated. Keep this legacy entry point for offline endpoints. Not a fleet release.';components=@{hwmServiceVersion='0.2.5.18';hwmTrayVersion='';hcsAutomationVersion=''};package=(Package $bridge)}
+          $modernManifest=[ordered]@{schemaVersion=1;sourceCommit=$env:SOURCE_SHA;channel='dev';releaseVersion='0.2.5.26';publishedUtc=[datetime]::UtcNow.ToString('o');urgent=$false;allowDowngrade=$false;minimumUpdaterVersion='0.1.5.0';releaseNotes='Modern DEV canary after verified updater migration. Service 0.2.5.18 and tray 1.0.0.16. Intune ownership and inventory retained; no fleet patch actions enabled.';components=@{hwmServiceVersion='0.2.5.18';hwmTrayVersion='1.0.0.16';hcsAutomationVersion=''};package=(Package $modern)}
+          $payload=Package $updaterPath
+          $catalog=[ordered]@{schemaVersion=1;sourceCommit=$env:SOURCE_SHA;channel='dev';minimumMaintenanceProtocol=1;version='0.1.5.0';url=$payload.url;sha256=$payload.sha256;sizeBytes=$payload.sizeBytes}
+          $bridgeManifest | ConvertTo-Json -Depth 10 | Set-Content feed/dev/dev.json -Encoding utf8
+          $modernManifest | ConvertTo-Json -Depth 10 | Set-Content feed/managed-v2/dev/dev.json -Encoding utf8
+          $catalog | ConvertTo-Json -Depth 10 | Set-Content feed/updater/dev.json -Encoding utf8
+          foreach ($path in @('feed/dev/dev.json','feed/managed-v2/dev/dev.json','feed/updater/dev.json')) { Get-Content $path }
+      - name: Commit DEV-only publication
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          git fetch origin main
+          if ($LASTEXITCODE) { throw 'Cannot refresh feed' }
+          $current=git show origin/main:feed/dev/dev.json | ConvertFrom-Json
+          if ([version]$current.releaseVersion -ge [version]'0.2.5.25') { throw 'Concurrent DEV release detected' }
+          git config user.name 'Headline HWM Release Bot'
+          git config user.email '248761542+Quantumrooster@users.noreply.github.com'
+          git add feed/dev/dev.json feed/dev/Headline-HWM-Bridge-v0.2.5.25-DEV.zip feed/managed-v2/dev feed/updater/dev.json feed/updater/dev/0.1.5.0/HeadlineManagedUpdater.exe
+          $changed=@(git diff --cached --name-only)
+          if ($changed | Where-Object { $_ -notmatch '^feed/(dev/|managed-v2/dev/|updater/dev[/.])' }) { throw 'Unexpected staged path' }
+          git commit -m 'release: DEV-only updater bridge 0.2.5.25 and modern 0.2.5.26'
+          if ($LASTEXITCODE) { throw 'Commit failed' }
+          git pull --rebase origin main
+          if ($LASTEXITCODE) { throw 'Feed rebase failed' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE) { throw 'Feed push failed' }
+  pages:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Verify all canary package hashes and sizes
+        shell: python
+        run: |
+          import json, hashlib
+          from pathlib import Path
+          base='https://quantumrooster.github.io/HWM-Updates/'
+          for name in ['feed/dev/dev.json','feed/managed-v2/dev/dev.json','feed/updater/dev.json']:
+              m=json.loads(Path(name).read_text(encoding='utf-8-sig'))
+              p=m.get('package',m)
+              assert p['url'].startswith(base)
+              f=Path('feed') / p['url'][len(base):]
+              assert f.stat().st_size==p['sizeBytes'], f
+              assert hashlib.sha256(f.read_bytes()).hexdigest().upper()==p['sha256'].upper(), f
+          assert json.loads(Path('feed/dev/dev.json').read_text(encoding='utf-8-sig'))['releaseVersion']=='0.2.5.25'
+          assert json.loads(Path('feed/managed-v2/dev/dev.json').read_text(encoding='utf-8-sig'))['releaseVersion']=='0.2.5.26'
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: feed
+      - uses: actions/deploy-pages@v4
+        id: deploy
