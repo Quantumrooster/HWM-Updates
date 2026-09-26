@@ -1,0 +1,89 @@
+name: Publish Stable HWM updater bootstrap 0.2.5.30
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: hwm-stable-bootstrap-publish
+  cancel-in-progress: false
+env:
+  SOURCE_SHA: '4fffd2bc3eaf8b8763f24e49907e4051d90df301'
+jobs:
+  publish:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Quantumrooster/HWM
+          ref: ${{ env.SOURCE_SHA }}
+          token: ${{ secrets.HWM_PRIVATE_READ_TOKEN }}
+          path: _hwm
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Validate source and build immutable packages
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          dotnet publish _hwm/ServiceProject/HeadlineWorkstationService.csproj -c Release -o _out/service
+          if ($LASTEXITCODE) { throw 'Service build failed' }
+          dotnet publish _hwm/HeadlineWorkstationMonitor/HeadlineWorkstationMonitor.csproj -c Release -o _out/tray
+          if ($LASTEXITCODE) { throw 'Tray build failed' }
+          $service='_out/service/HeadlineWorkstationService.exe'; $tray='_out/tray/HeadlineWorkstationMonitor.exe'
+          if ((Get-Item $service).VersionInfo.FileVersion -ne '0.2.5.20') { throw 'Wrong service version' }
+          if ((Get-Item $tray).VersionInfo.FileVersion -ne '1.0.0.16') { throw 'Wrong tray version' }
+          $bridge='feed/stable/Headline-HWM-Stable-Bridge-v0.2.5.29.zip'
+          $modern='feed/managed-v2/stable/Headline-HWM-Service-v0.2.5.30-Stable.zip'
+          foreach($path in @($bridge,$modern)) { if(Test-Path $path){throw "Immutable package already exists: $path"}; New-Item -ItemType Directory -Force (Split-Path $path) | Out-Null }
+          Compress-Archive -LiteralPath $service -DestinationPath $bridge -CompressionLevel Optimal
+          Compress-Archive -LiteralPath @($service,$tray) -DestinationPath $modern -CompressionLevel Optimal
+          function Package($path) { [ordered]@{url=('https://quantumrooster.github.io/HWM-Updates/'+$path.Substring(5));sha256=(Get-FileHash $path -Algorithm SHA256).Hash.ToUpperInvariant();sizeBytes=(Get-Item $path).Length} }
+          $bridgeManifest=[ordered]@{schemaVersion=1;sourceCommit=$env:SOURCE_SHA;channel='stable';releaseVersion='0.2.5.29';publishedUtc=[datetime]::UtcNow.ToString('o');urgent=$false;allowDowngrade=$false;minimumUpdaterVersion='0.1.2.0';releaseNotes='Stable legacy updater bridge. Service 0.2.5.20 safely bootstraps existing automatic Stable installations whose updater predates the maintenance setting. Explicit opt-out remains respected.';components=@{hwmServiceVersion='0.2.5.20';hwmTrayVersion='';hcsAutomationVersion=''};package=(Package $bridge)}
+          $modernManifest=[ordered]@{schemaVersion=1;sourceCommit=$env:SOURCE_SHA;channel='stable';releaseVersion='0.2.5.30';publishedUtc=[datetime]::UtcNow.ToString('o');urgent=$false;allowDowngrade=$false;minimumUpdaterVersion='0.1.5.0';releaseNotes='Stable HWM 0.2.5.30: updater continuity, inventory and Intune update ownership. Service 0.2.5.20; tray 1.0.0.16.';components=@{hwmServiceVersion='0.2.5.20';hwmTrayVersion='1.0.0.16';hcsAutomationVersion=''};package=(Package $modern)}
+          $updater=[ordered]@{schemaVersion=1;sourceCommit='2af1c30b978c5647929d41e290730f034a34c62e';channel='stable';minimumMaintenanceProtocol=1;version='0.1.5.0';url='https://quantumrooster.github.io/HWM-Updates/updater/dev/0.1.5.0/HeadlineManagedUpdater.exe';sha256='F4E0DF804C951FC0A8CBB815837B8F8794E01BC1FD20D921A5091FE5D5D5D55F';sizeBytes=69854038}
+          $bridgeManifest | ConvertTo-Json -Depth 10 | Set-Content feed/stable/stable.json -Encoding utf8
+          $modernManifest | ConvertTo-Json -Depth 10 | Set-Content feed/managed-v2/stable/stable.json -Encoding utf8
+          New-Item -ItemType Directory -Force feed/updater | Out-Null
+          $updater | ConvertTo-Json -Depth 10 | Set-Content feed/updater/stable.json -Encoding utf8
+      - name: Commit publication
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'; git fetch origin main
+          $old=git show origin/main:feed/stable/stable.json | ConvertFrom-Json
+          if ([version]$old.releaseVersion -ge [version]'0.2.5.29') { throw 'Stable has advanced; refusing overwrite' }
+          git config user.name 'Headline HWM Release Bot'; git config user.email '248761542+Quantumrooster@users.noreply.github.com'
+          git add feed/stable feed/managed-v2/stable feed/updater/stable.json
+          git commit -m 'release: Stable updater bootstrap 0.2.5.29 and HWM 0.2.5.30'
+          git pull --rebase origin main; git push origin HEAD:main
+  pages:
+    needs: publish
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Verify Stable publication
+        shell: python
+        run: |
+          import json, hashlib
+          from pathlib import Path
+          base='https://quantumrooster.github.io/HWM-Updates/'
+          for name,version in [('feed/stable/stable.json','0.2.5.29'),('feed/managed-v2/stable/stable.json','0.2.5.30'),('feed/updater/stable.json','0.1.5.0')]:
+              manifest=json.loads(Path(name).read_text(encoding='utf-8-sig'))
+              assert manifest.get('releaseVersion',manifest.get('version'))==version
+              package=manifest.get('package',manifest)
+              assert package['url'].startswith(base)
+              target=Path('feed') / package['url'][len(base):]
+              assert target.exists(), target
+              assert target.stat().st_size==package['sizeBytes'], target
+              assert hashlib.sha256(target.read_bytes()).hexdigest().upper()==package['sha256'].upper(), target
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: feed
+      - uses: actions/deploy-pages@v4
