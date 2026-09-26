@@ -1,20 +1,21 @@
 {
+  "sourceCommit": "f16a09349b42c4032b28805021bf6864a40f1411",
   "schemaVersion": 1,
   "channel": "stable",
-  "releaseVersion": "0.2.5.14",
-  "publishedUtc": "2026-09-18T04:16:54.4457075Z",
-  "urgent": true,
+  "releaseVersion": "0.2.5.24",
+  "publishedUtc": "2026-09-26T00:03:30.3931940+00:00",
+  "urgent": false,
   "allowDowngrade": false,
-  "minimumUpdaterVersion": "0.1.2.0",
-  "releaseNotes": "HWM 0.2.5.14 contains service 0.2.5.11 and tray 1.0.0.10. This release adds explicit Microsoft Defender endpoint reporting to the workstation heartbeat: antivirus product version, Defender running mode, MDE / EDR onboarding state, and Sense service state. MSP Operations can now distinguish ordinary Microsoft Defender Antivirus from an endpoint that is actually onboarded to Microsoft Defender for Endpoint. Existing updater verification, rollback, tray reliability, terminal, Mesh recovery, event health and workstation monitoring behaviour remain unchanged.",
+  "minimumUpdaterVersion": "0.1.4.0",
+  "releaseNotes": "Stable HWM 0.2.5.24: laptop-friendly scrolling and responsive cards; Intune enrollment display and update ownership telemetry; detailed update inventory. Service 0.2.5.17, tray 1.0.0.16. Requires Managed Updater 0.1.4.0. Automatic Intune/Defender enrollment is not included. Existing Safe Cleanup and tray fixes preserved.",
   "components": {
-    "hwmServiceVersion": "0.2.5.11",
-    "hwmTrayVersion": "1.0.0.10",
+    "hwmServiceVersion": "0.2.5.17",
+    "hwmTrayVersion": "1.0.0.16",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/releases/Headline-HWM-Service-v0.2.5.14.zip",
-    "sha256": "4C0E84AEBF2626B3D2699AD8F95FE19996170484514B13F8E9FD4FF2E2C6B5E6",
-    "sizeBytes": 99312518
+    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.24-DEV.zip",
+    "sha256": "F57939A20A1074FC9C46642701BC2D890C375349B376F444589BFCA5E1EB4324",
+    "sizeBytes": 99323725
   }
 }
