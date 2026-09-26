@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "2af1c30b978c5647929d41e290730f034a34c62e",
+  "channel": "stable",
+  "minimumMaintenanceProtocol": 1,
+  "version": "0.1.5.0",
+  "url": "https://quantumrooster.github.io/HWM-Updates/updater/dev/0.1.5.0/HeadlineManagedUpdater.exe",
+  "sha256": "F4E0DF804C951FC0A8CBB815837B8F8794E01BC1FD20D921A5091FE5D5D5D55F",
+  "sizeBytes": 69854038
+}
