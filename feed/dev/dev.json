@@ -1,21 +1,21 @@
 {
-  "sourceCommit": "f16a09349b42c4032b28805021bf6864a40f1411",
   "schemaVersion": 1,
+  "sourceCommit": "2af1c30b978c5647929d41e290730f034a34c62e",
   "channel": "dev",
-  "releaseVersion": "0.2.5.24",
-  "publishedUtc": "2026-09-25T22:17:05.6009204Z",
+  "releaseVersion": "0.2.5.25",
+  "publishedUtc": "2026-09-26T01:36:29.9543517Z",
   "urgent": false,
   "allowDowngrade": false,
-  "minimumUpdaterVersion": "0.1.4.0",
-  "releaseNotes": "Fixes clipped laptop layout with readable card heights, scrolling and narrow-window stacking. Retains the Intune enrollment row. Existing Intune enrollment and update ownership telemetry preserved. Read-only hardware/reporting inventory; standalone maintenance pilot is not deployed. Inventory-only DEV 0.2.5.24: service 0.2.5.17, tray 1.0.0.16; detailed Windows Update and Office/Edge/Chrome/Adobe inventory. Preserves Safe Cleanup and Managed Updater fixes. Minimum updater 0.1.4.0. No remote update/install actions. HCSPC2025 validation before API production deployment.",
+  "minimumUpdaterVersion": "0.1.2.0",
+  "releaseNotes": "DEV canary service-only bridge. Service 0.2.5.18; tray and HCS untouched. Updater maintenance remains explicitly gated. Keep this legacy entry point for offline endpoints. Not a fleet release.",
   "components": {
-    "hwmServiceVersion": "0.2.5.17",
-    "hwmTrayVersion": "1.0.0.16",
-    "hcsAutomationVersion": ""
+    "hwmTrayVersion": "",
+    "hcsAutomationVersion": "",
+    "hwmServiceVersion": "0.2.5.18"
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Service-v0.2.5.24-DEV.zip",
-    "sha256": "F57939A20A1074FC9C46642701BC2D890C375349B376F444589BFCA5E1EB4324",
-    "sizeBytes": 99323725
+    "url": "https://quantumrooster.github.io/HWM-Updates/dev/Headline-HWM-Bridge-v0.2.5.25-DEV.zip",
+    "sha256": "0C15BE1E5415A9807C41B75BB74DBB82812749C6DFC1E4C2B3C15AE89E6598FE",
+    "sizeBytes": 31532765
   }
 }
