@@ -14,6 +14,7 @@ $taskName = 'Headline Managed Updater 15 Minute Check'
 $legacyFeed = 'https://quantumrooster.github.io/HWM-Updates/stable'
 $modernFeed = 'https://quantumrooster.github.io/HWM-Updates/managed-v2/stable'
 $defaultFeed = 'https://updates.headline.co.nz/managed-client'
+$updaterShouldRun = $false
 
 function Get-UpdaterServices {
     $services = @()
@@ -103,6 +104,7 @@ try {
     if ($config.PSObject.Properties['enabled'] -and $config.enabled -eq $false) {
         throw 'The Managed Updater is explicitly disabled. The updater binary was repaired, but HWM was not changed.'
     }
+    $updaterShouldRun = $true
     $configuredChannel = if ($config.PSObject.Properties['channel']) { [string]$config.channel } else { 'stable' }
     if ($configuredChannel -ne 'stable') {
         throw "This recovery is for Stable endpoints; the configured channel is '$configuredChannel'."
@@ -136,9 +138,23 @@ try {
     }
 }
 finally {
-    foreach ($serviceName in $runningServiceNames) {
-        $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
-        if ($service -and $service.Status -ne 'Running') { Start-Service -Name $serviceName }
+    if ($updaterShouldRun) {
+        $canonicalService = Get-Service -Name 'HeadlineManagedUpdater' -ErrorAction SilentlyContinue
+        if (-not $canonicalService) {
+            & sc.exe create HeadlineManagedUpdater binPath= ('"' + $updaterExe + '"') start= delayed-auto DisplayName= 'Headline Managed Updater' | Out-Null
+            if ($LASTEXITCODE -ne 0) { Write-Warning 'Could not recreate the canonical Managed Updater service.' }
+        }
+        else {
+            & sc.exe config HeadlineManagedUpdater binPath= ('"' + $updaterExe + '"') start= delayed-auto DisplayName= 'Headline Managed Updater' | Out-Null
+        }
+        $canonicalService = Get-Service -Name 'HeadlineManagedUpdater' -ErrorAction SilentlyContinue
+        if ($canonicalService -and $canonicalService.Status -ne 'Running') { Start-Service -Name 'HeadlineManagedUpdater' }
+    }
+    else {
+        foreach ($serviceName in $runningServiceNames) {
+            $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
+            if ($service -and $service.Status -ne 'Running') { Start-Service -Name $serviceName }
+        }
     }
     if ($taskWasEnabled) { Enable-ScheduledTask -TaskName $taskName | Out-Null }
 }
