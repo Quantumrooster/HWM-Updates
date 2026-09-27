@@ -1,0 +1,147 @@
+name: Publish restart reminder DEV pilot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: restart-reminder-dev-publish
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: '9c900310f5ce5b4a5d8f5f4c05ef27790993586b'
+  RELEASE_VERSION: '0.2.5.31'
+  SERVICE_VERSION: '0.2.5.21'
+  TRAY_VERSION: '1.0.0.17'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Quantumrooster/HWM
+          ref: ${{ env.SOURCE_SHA }}
+          token: ${{ secrets.HWM_PRIVATE_READ_TOKEN }}
+          path: _hwm
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Test and build the exact pilot source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($project in @(
+            '_hwm/tests/RestartReminderTests/RestartReminderTests.csproj',
+            '_hwm/tests/InventoryContractTests/InventoryContractTests.csproj',
+            '_hwm/tests/IntuneEnrollmentTests/IntuneEnrollmentTests.csproj',
+            '_hwm/tests/TrayLayoutChecks/TrayLayoutChecks.csproj'
+          )) {
+            dotnet run --project $project -c Release
+            if ($LASTEXITCODE) { throw "Checks failed: $project" }
+          }
+          dotnet publish _hwm/ServiceProject/HeadlineWorkstationService.csproj -c Release -o _out/service
+          if ($LASTEXITCODE) { throw 'Service build failed' }
+          dotnet publish _hwm/HeadlineWorkstationMonitor/HeadlineWorkstationMonitor.csproj -c Release -o _out/tray
+          if ($LASTEXITCODE) { throw 'Tray build failed' }
+      - name: Create immutable modern DEV package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $current = Get-Content feed/managed-v2/dev/dev.json -Raw | ConvertFrom-Json
+          if ([version]$current.releaseVersion -ge [version]$env:RELEASE_VERSION) {
+            throw 'DEV has already advanced; review instead of overwriting.'
+          }
+          $updater = Get-Content feed/updater/stable.json -Raw | ConvertFrom-Json
+          if ($updater.version -ne '0.1.5.0' -or $updater.sha256 -ne 'F4E0DF804C951FC0A8CBB815837B8F8794E01BC1FD20D921A5091FE5D5D5D55F') {
+            throw 'Stable updater catalog changed; review it before publishing HWM.'
+          }
+          $service = '_out/service/HeadlineWorkstationService.exe'
+          $tray = '_out/tray/HeadlineWorkstationMonitor.exe'
+          foreach ($pair in @(@($service, $env:SERVICE_VERSION), @($tray, $env:TRAY_VERSION))) {
+            if ((Get-Item $pair[0]).VersionInfo.FileVersion -ne $pair[1]) {
+              throw "Wrong component version: $($pair[0])"
+            }
+          }
+          $package = "feed/managed-v2/dev/Headline-HWM-Service-v$($env:RELEASE_VERSION)-DEV.zip"
+          if (Test-Path -LiteralPath $package) { throw "Immutable package already exists: $package" }
+          Compress-Archive -Path @($service, $tray) -DestinationPath $package -CompressionLevel Optimal
+          if ((Get-Item $package).Length -ge 104857600) { throw 'Package is too large for the release repository.' }
+          $base = 'https://quantumrooster.github.io/HWM-Updates'
+          $manifest = [ordered]@{
+            schemaVersion = 1
+            sourceCommit = $env:SOURCE_SHA
+            channel = 'dev'
+            releaseVersion = $env:RELEASE_VERSION
+            publishedUtc = [datetime]::UtcNow.ToString('o')
+            urgent = $false
+            allowDowngrade = $false
+            minimumUpdaterVersion = '0.1.5.0'
+            releaseNotes = 'DEV pilot for progressive Windows restart reminders. Service 0.2.5.21 and tray 1.0.0.17. User prompts and deadline enforcement are disabled by default; Intune, MDM and WSUS ownership is preserved.'
+            components = [ordered]@{
+              hwmServiceVersion = $env:SERVICE_VERSION
+              hwmTrayVersion = $env:TRAY_VERSION
+              hcsAutomationVersion = ''
+            }
+            package = [ordered]@{
+              url = "$base/managed-v2/dev/$(Split-Path -Leaf $package)"
+              sha256 = (Get-FileHash $package -Algorithm SHA256).Hash
+              sizeBytes = (Get-Item $package).Length
+            }
+          }
+          $manifest | ConvertTo-Json -Depth 10 | Set-Content feed/managed-v2/dev/dev.json -Encoding utf8
+          Get-Content feed/managed-v2/dev/dev.json
+      - name: Commit DEV pilot publication
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git fetch origin main
+          if ($LASTEXITCODE) { throw 'Cannot refresh feed.' }
+          $current = git show origin/main:feed/managed-v2/dev/dev.json | ConvertFrom-Json
+          if ([version]$current.releaseVersion -ge [version]$env:RELEASE_VERSION) {
+            throw 'Concurrent DEV release detected.'
+          }
+          git config user.name 'Headline HWM Release Bot'
+          git config user.email '248761542+Quantumrooster@users.noreply.github.com'
+          git add feed/managed-v2/dev/dev.json "feed/managed-v2/dev/Headline-HWM-Service-v$($env:RELEASE_VERSION)-DEV.zip"
+          $changed = @(git diff --cached --name-only)
+          if ($changed | Where-Object { $_ -notmatch '^feed/managed-v2/dev/' }) { throw 'Unexpected staged path.' }
+          git commit -m "release: restart reminder DEV pilot $($env:RELEASE_VERSION)"
+          if ($LASTEXITCODE) { throw 'Commit failed.' }
+          git pull --rebase origin main
+          if ($LASTEXITCODE) { throw 'Feed rebase failed.' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE) { throw 'Feed push failed.' }
+
+  pages:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Verify published pilot package
+        shell: python
+        run: |
+          import hashlib, json
+          from pathlib import Path
+          manifest = json.loads(Path('feed/managed-v2/dev/dev.json').read_text(encoding='utf-8-sig'))
+          assert manifest['releaseVersion'] == '0.2.5.31'
+          assert manifest['sourceCommit'] == '9c900310f5ce5b4a5d8f5f4c05ef27790993586b'
+          package = Path('feed/managed-v2/dev/Headline-HWM-Service-v0.2.5.31-DEV.zip')
+          assert package.stat().st_size == manifest['package']['sizeBytes']
+          assert hashlib.sha256(package.read_bytes()).hexdigest().upper() == manifest['package']['sha256'].upper()
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: feed
+      - uses: actions/deploy-pages@v4
+        id: deploy
