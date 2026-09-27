@@ -7,8 +7,13 @@ $updaterFolder = Join-Path $env:ProgramFiles 'Headline\Managed Updater'
 $updaterExe = Join-Path $updaterFolder 'HeadlineManagedUpdater.exe'
 $work = Join-Path $env:ProgramData 'Headline\ManagedUpdater\Recovery'
 $payload = Join-Path $work 'HeadlineManagedUpdater.exe'
+$configPath = Join-Path $env:ProgramData 'Headline\ManagedUpdater\config.json'
+$statusPath = Join-Path $env:ProgramData 'Headline\ManagedUpdater\status.json'
 $serviceNames = @('HeadlineManagedUpdater', 'Headline Managed Updater')
 $taskName = 'Headline Managed Updater 15 Minute Check'
+$legacyFeed = 'https://quantumrooster.github.io/HWM-Updates/stable'
+$modernFeed = 'https://quantumrooster.github.io/HWM-Updates/managed-v2/stable'
+$defaultFeed = 'https://updates.headline.co.nz/managed-client'
 
 function Get-UpdaterServices {
     $services = @()
@@ -83,12 +88,46 @@ try {
         throw 'Recovered updater did not pass its startup probe; previous binary restored.'
     }
 
+    $originalConfig = if (Test-Path -LiteralPath $configPath) { Get-Content -LiteralPath $configPath -Raw } else { $null }
+    if ($originalConfig) {
+        $config = $originalConfig | ConvertFrom-Json
+    }
+    else {
+        $config = [pscustomobject][ordered]@{
+            schemaVersion = 1; enabled = $true; channel = 'stable'; manifestBaseUrl = $modernFeed
+            checkEveryMinutes = 30; autoInstall = $true; maintenanceStartHour = 0; maintenanceEndHour = 0
+            healthVerificationSeconds = 120; allowFileManifestForTesting = $false
+        }
+    }
+
+    if ($config.PSObject.Properties['enabled'] -and $config.enabled -eq $false) {
+        throw 'The Managed Updater is explicitly disabled. The updater binary was repaired, but HWM was not changed.'
+    }
+    $configuredChannel = if ($config.PSObject.Properties['channel']) { [string]$config.channel } else { 'stable' }
+    if ($configuredChannel -ne 'stable') {
+        throw "This recovery is for Stable endpoints; the configured channel is '$configuredChannel'."
+    }
+    $configuredFeed = if ($config.PSObject.Properties['manifestBaseUrl']) { [string]$config.manifestBaseUrl } else { $defaultFeed }
+    if ($configuredFeed -eq $legacyFeed -or $configuredFeed -eq $defaultFeed) {
+        if ($config.PSObject.Properties['manifestBaseUrl']) { $config.manifestBaseUrl = $modernFeed }
+        else { $config | Add-Member -NotePropertyName manifestBaseUrl -NotePropertyValue $modernFeed }
+    }
+    elseif ($configuredFeed -ne $modernFeed) {
+        throw "Custom update feed '$configuredFeed' was preserved and requires explicit review."
+    }
+
+    New-Item -ItemType Directory -Path (Split-Path -Parent $configPath) -Force | Out-Null
+    $configTemp = $configPath + '.repair.tmp'
+    [IO.File]::WriteAllText($configTemp, ($config | ConvertTo-Json -Depth 10), [Text.UTF8Encoding]::new($false))
+    Move-Item -LiteralPath $configTemp -Destination $configPath -Force
+
     Write-Host "Managed Updater $($catalog.version) installed. Running the HWM update now..."
     $runOutput = (& $updaterExe --run-once --force 2>&1 | Out-String).Trim()
     $runExitCode = $LASTEXITCODE
     if ($runOutput) { Write-Host $runOutput }
     if ($runExitCode -ne 0 -and $runExitCode -ne 2) {
-        $statusPath = Join-Path $env:ProgramData 'Headline\ManagedUpdater\status.json'
+        if ($null -eq $originalConfig) { Remove-Item -LiteralPath $configPath -Force -ErrorAction SilentlyContinue }
+        else { [IO.File]::WriteAllText($configPath, $originalConfig, [Text.UTF8Encoding]::new($false)) }
         if (Test-Path -LiteralPath $statusPath) {
             Write-Host 'Updater status:'
             Get-Content -LiteralPath $statusPath -Raw | Write-Host
@@ -106,4 +145,5 @@ finally {
 
 $hwmExe = Join-Path $env:ProgramFiles 'Headline\Workstation Monitor\HeadlineWorkstationService.exe'
 $hwmVersion = if (Test-Path -LiteralPath $hwmExe) { (Get-Item -LiteralPath $hwmExe).VersionInfo.FileVersion } else { 'Not installed' }
-Write-Host "Recovery completed. Managed Updater: $($catalog.version); HWM service: $hwmVersion"
+$finalState = if (Test-Path -LiteralPath $statusPath) { (Get-Content -LiteralPath $statusPath -Raw | ConvertFrom-Json).state } else { 'No status' }
+Write-Host "Recovery completed. Managed Updater: $($catalog.version); HWM service: $hwmVersion; state: $finalState"
