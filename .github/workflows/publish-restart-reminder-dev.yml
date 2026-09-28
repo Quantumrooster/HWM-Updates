@@ -13,10 +13,10 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SOURCE_SHA: 'dfee4d93cd8eac22437cb4e6c9c9d28cc9647a8e'
-  RELEASE_VERSION: '0.2.5.32'
-  SERVICE_VERSION: '0.2.5.21'
-  TRAY_VERSION: '1.0.0.17'
+  SOURCE_SHA: '37de28921851dd0bef56ca7cf3807d0a56641d75'
+  RELEASE_VERSION: '0.2.5.33'
+  SERVICE_VERSION: '0.2.5.22'
+  TRAY_VERSION: '1.0.0.18'
 
 jobs:
   build:
@@ -83,7 +83,7 @@ jobs:
             urgent = $false
             allowDowngrade = $false
             minimumUpdaterVersion = '0.1.5.0'
-            releaseNotes = 'DEV pilot for progressive Windows restart reminders with completed button actions. Service 0.2.5.21 and tray 1.0.0.17. User prompts and deadline enforcement are disabled by default; Intune, MDM and WSUS ownership is preserved.'
+            releaseNotes = 'DEV pilot for restart reminder acknowledgement telemetry. Service 0.2.5.22 and tray 1.0.0.18 report notification, response, user, snooze and schedule status to MSP. User prompts and deadline enforcement remain disabled by default; preview mode remains side-effect free.'
             components = [ordered]@{
               hwmServiceVersion = $env:SERVICE_VERSION
               hwmTrayVersion = $env:TRAY_VERSION
@@ -135,9 +135,9 @@ jobs:
           import hashlib, json
           from pathlib import Path
           manifest = json.loads(Path('feed/managed-v2/dev/dev.json').read_text(encoding='utf-8-sig'))
-          assert manifest['releaseVersion'] == '0.2.5.32'
-          assert manifest['sourceCommit'] == 'dfee4d93cd8eac22437cb4e6c9c9d28cc9647a8e'
-          package = Path('feed/managed-v2/dev/Headline-HWM-Service-v0.2.5.32-DEV.zip')
+          assert manifest['releaseVersion'] == '0.2.5.33'
+          assert manifest['sourceCommit'] == '37de28921851dd0bef56ca7cf3807d0a56641d75'
+          package = Path('feed/managed-v2/dev/Headline-HWM-Service-v0.2.5.33-DEV.zip')
           assert package.stat().st_size == manifest['package']['sizeBytes']
           assert hashlib.sha256(package.read_bytes()).hexdigest().upper() == manifest['package']['sha256'].upper()
       - uses: actions/upload-pages-artifact@v3
