@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "9c900310f5ce5b4a5d8f5f4c05ef27790993586b",
+  "sourceCommit": "dfee4d93cd8eac22437cb4e6c9c9d28cc9647a8e",
   "channel": "dev",
-  "releaseVersion": "0.2.5.31",
-  "publishedUtc": "2026-09-27T10:33:37.8419409Z",
+  "releaseVersion": "0.2.5.32",
+  "publishedUtc": "2026-09-28T11:44:10.6069486Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "DEV pilot for progressive Windows restart reminders. Service 0.2.5.21 and tray 1.0.0.17. User prompts and deadline enforcement are disabled by default; Intune, MDM and WSUS ownership is preserved.",
+  "releaseNotes": "DEV pilot for progressive Windows restart reminders with completed button actions. Service 0.2.5.21 and tray 1.0.0.17. User prompts and deadline enforcement are disabled by default; Intune, MDM and WSUS ownership is preserved.",
   "components": {
     "hwmServiceVersion": "0.2.5.21",
     "hwmTrayVersion": "1.0.0.17",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/dev/Headline-HWM-Service-v0.2.5.31-DEV.zip",
-    "sha256": "75EAC0D9020F079E1D00C6E3C61C949502665E6CD98918E0BA52D105E6DA4218",
-    "sizeBytes": 99333394
+    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/dev/Headline-HWM-Service-v0.2.5.32-DEV.zip",
+    "sha256": "25CB1D40E14F5C9F3F46960AF17DB527C1A39ECF159CC62587013F1D301E4526",
+    "sizeBytes": 99335486
   }
 }
