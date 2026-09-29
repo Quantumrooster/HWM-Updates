@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "68b4d373dd5628249125c210589bccf93b2c92a5",
+  "sourceCommit": "e9bede5dc04e55b91f7d1626c3a1618f3d0b1bee",
   "channel": "stable",
-  "releaseVersion": "0.2.5.36",
-  "publishedUtc": "2026-09-29T04:47:11.3369807Z",
+  "releaseVersion": "0.2.5.37",
+  "publishedUtc": "2026-09-29T19:43:04.5727731Z",
   "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "Stable post-reboot reminder reset. Service 0.2.5.24 clears the previous reminder after a real reboot, reassesses Windows Update for 30 minutes, and requires two separated signals before opening a legitimate second restart cycle. Tray remains 1.0.0.19. Automatic deadline scheduling remains disabled.",
+  "releaseNotes": "Urgent Stable Intune enrollment recovery. Service 0.2.5.25 adds allow-listed Intune.Enroll remediation for eligible Entra-joined Bloem endpoints, launches supported MDM enrollment in the interactive Azure AD user context, prevents repeat enrollment, persists retry state, and verifies MDM evidence plus subsequent Sense/MDE status. Tray remains 1.0.0.19.",
   "components": {
-    "hwmServiceVersion": "0.2.5.24",
+    "hwmServiceVersion": "0.2.5.25",
     "hwmTrayVersion": "1.0.0.19",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.36-Stable.zip",
-    "sha256": "3F46725149D4579E70E7532CC4AB465A10478C231188BC64DFBF2C73A9370A28",
-    "sizeBytes": 99346986
+    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.37-Stable.zip",
+    "sha256": "EDF9440765D9D0EABC6E76C452093E262F84C3B65BCEC34BFF6880072BFDE928",
+    "sizeBytes": 99356398
   }
 }
