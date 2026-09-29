@@ -1,8 +1,8 @@
 @echo off
 setlocal
-set "scriptUrl=https://raw.githubusercontent.com/Quantumrooster/HWM-Updates/main/scripts/Start-HwmStableUpdate.ps1"
+set "scriptUrl=https://raw.githubusercontent.com/Quantumrooster/HWM-Updates/main/scripts/Invoke-HwmStableUpdate.ps1"
 set "scriptDir=%ProgramData%\Headline\ManagedUpdater\Scripts"
-set "scriptPath=%scriptDir%\Start-HwmStableUpdate.ps1"
+set "scriptPath=%scriptDir%\Invoke-HwmStableUpdate.ps1"
 set "taskName=Headline-HWM-Stable-Update-Now"
 
 if not exist "%scriptDir%" mkdir "%scriptDir%"
