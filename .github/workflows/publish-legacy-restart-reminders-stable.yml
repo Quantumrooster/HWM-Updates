@@ -1,146 +1,60 @@
-name: Publish restart reminders to legacy Stable
+name: Validate legacy Stable updater bridge
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'feed/stable/stable.json'
+      - '.github/workflows/*stable*.yml'
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
-
-concurrency:
-  group: legacy-restart-reminders-stable-publish
-  cancel-in-progress: false
-
-env:
-  SOURCE_SHA: '3516a44092a34544f6daf5cdff6b4e61da1f74fd'
-  RELEASE_VERSION: '0.2.5.35'
-  MODERN_RELEASE_VERSION: '0.2.5.34'
-  SERVICE_VERSION: '0.2.5.23'
-  TRAY_VERSION: '1.0.0.19'
+  contents: read
 
 jobs:
-  publish:
+  validate:
     runs-on: windows-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           filter: blob:none
           sparse-checkout: |
             feed/stable
-            feed/managed-v2/stable
-      - name: Validate and stage the legacy-compatible package
+            feed/updater/stable.json
+      - name: Enforce updater-first legacy Stable migration
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $modernManifest = Get-Content feed/managed-v2/stable/stable.json -Raw | ConvertFrom-Json
-          if ($modernManifest.releaseVersion -ne $env:MODERN_RELEASE_VERSION -or
-              $modernManifest.sourceCommit -ne $env:SOURCE_SHA -or
-              $modernManifest.components.hwmServiceVersion -ne $env:SERVICE_VERSION -or
-              $modernManifest.components.hwmTrayVersion -ne $env:TRAY_VERSION -or
-              -not $modernManifest.urgent) {
-            throw 'The verified modern Stable release is not the expected restart-reminder build.'
+          $manifest = Get-Content feed/stable/stable.json -Raw | ConvertFrom-Json
+          $updater = Get-Content feed/updater/stable.json -Raw | ConvertFrom-Json
+
+          if ($manifest.schemaVersion -ne 1 -or $manifest.channel -ne 'stable') {
+            throw 'Legacy Stable manifest identity is invalid.'
+          }
+          if ($manifest.minimumUpdaterVersion -ne '0.1.2.0') {
+            throw 'Legacy Stable must remain readable by the installed legacy updater.'
+          }
+          if ($manifest.components.hwmServiceVersion -ne '0.2.5.20' -or
+              $manifest.components.hwmTrayVersion -ne '' -or
+              $manifest.components.hcsAutomationVersion -ne '') {
+            throw 'Legacy Stable may only carry the service-only updater bridge.'
+          }
+          if ($manifest.package.url -notmatch '/stable/Headline-HWM-Stable-Bridge-v0\.2\.5\.29\.zip$') {
+            throw 'Legacy Stable package is not the immutable updater bridge.'
+          }
+          if ($updater.version -ne '0.1.5.0') {
+            throw 'The verified updater bootstrap catalog changed; run a controlled updater canary first.'
           }
 
-          $sourcePackage = "feed/managed-v2/stable/Headline-HWM-Service-v$($env:MODERN_RELEASE_VERSION)-Stable.zip"
-          if ((Get-Item $sourcePackage).Length -ne $modernManifest.package.sizeBytes -or
-              (Get-FileHash $sourcePackage -Algorithm SHA256).Hash -ne $modernManifest.package.sha256) {
-            throw 'The modern Stable package does not match its signed manifest metadata.'
+          $package = 'feed/stable/Headline-HWM-Stable-Bridge-v0.2.5.29.zip'
+          if ((Get-Item $package).Length -ne $manifest.package.sizeBytes -or
+              (Get-FileHash $package -Algorithm SHA256).Hash -ne $manifest.package.sha256) {
+            throw 'The immutable updater bridge package does not match its manifest.'
           }
 
-          $package = "feed/stable/Headline-HWM-Stable-v$($env:RELEASE_VERSION).zip"
-          if (Test-Path -LiteralPath $package) { throw "Immutable package already exists: $package" }
-          Copy-Item -LiteralPath $sourcePackage -Destination $package
-
-          $expanded = Join-Path $env:RUNNER_TEMP 'legacy-stable-package'
+          $expanded = Join-Path $env:RUNNER_TEMP 'legacy-stable-bridge'
           Expand-Archive -LiteralPath $package -DestinationPath $expanded
           $files = @(Get-ChildItem $expanded -File)
-          $expectedNames = @('HeadlineWorkstationMonitor.exe', 'HeadlineWorkstationService.exe')
-          if ($files.Count -ne 2 -or @($files.Name | Where-Object { $_ -notin $expectedNames }).Count -ne 0) {
-            throw 'Package contains files unsupported by the legacy updater.'
+          if ($files.Count -ne 1 -or $files[0].Name -ne 'HeadlineWorkstationService.exe') {
+            throw 'Legacy Stable bridge must not contain a tray executable.'
           }
-          $service = Join-Path $expanded 'HeadlineWorkstationService.exe'
-          $tray = Join-Path $expanded 'HeadlineWorkstationMonitor.exe'
-          if ((Get-Item $service).VersionInfo.FileVersion -ne $env:SERVICE_VERSION -or
-              (Get-Item $tray).VersionInfo.FileVersion -ne $env:TRAY_VERSION) {
-            throw 'Package component versions do not match the release declaration.'
-          }
-
-          $base = 'https://quantumrooster.github.io/HWM-Updates'
-          $manifest = [ordered]@{
-            schemaVersion = 1
-            sourceCommit = $env:SOURCE_SHA
-            channel = 'stable'
-            releaseVersion = $env:RELEASE_VERSION
-            publishedUtc = [datetime]::UtcNow.ToString('o')
-            urgent = $true
-            allowDowngrade = $false
-            minimumUpdaterVersion = '0.1.2.0'
-            releaseNotes = 'Stable restart reminders for legacy-feed endpoints. Installs the same verified service 0.2.5.23 and tray 1.0.0.19 as modern Stable. User-selected restart actions and MSP acknowledgement telemetry are enabled; automatic deadline scheduling remains disabled.'
-            components = [ordered]@{
-              hwmServiceVersion = $env:SERVICE_VERSION
-              hwmTrayVersion = $env:TRAY_VERSION
-              hcsAutomationVersion = ''
-            }
-            package = [ordered]@{
-              url = "$base/stable/$(Split-Path -Leaf $package)"
-              sha256 = (Get-FileHash $package -Algorithm SHA256).Hash
-              sizeBytes = (Get-Item $package).Length
-            }
-          }
-          $manifest | ConvertTo-Json -Depth 10 | Set-Content feed/stable/stable.json -Encoding utf8
-          Get-Content feed/stable/stable.json
-      - name: Commit legacy Stable publication
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          git fetch origin main
-          if ($LASTEXITCODE) { throw 'Cannot refresh feed.' }
-          $current = git show origin/main:feed/stable/stable.json | ConvertFrom-Json
-          if ([version]$current.releaseVersion -ge [version]$env:RELEASE_VERSION) {
-            throw 'Concurrent legacy Stable release detected.'
-          }
-          git config user.name 'Headline HWM Release Bot'
-          git config user.email '248761542+Quantumrooster@users.noreply.github.com'
-          git add feed/stable/stable.json "feed/stable/Headline-HWM-Stable-v$($env:RELEASE_VERSION).zip"
-          $changed = @(git diff --cached --name-only)
-          if ($changed | Where-Object { $_ -notmatch '^feed/stable/' }) { throw 'Unexpected staged path.' }
-          git commit -m "release: restart reminders for legacy Stable $($env:RELEASE_VERSION)"
-          if ($LASTEXITCODE) { throw 'Commit failed.' }
-          git pull --rebase origin main
-          if ($LASTEXITCODE) { throw 'Feed rebase failed.' }
-          git push origin HEAD:main
-          if ($LASTEXITCODE) { throw 'Feed push failed.' }
-
-  pages:
-    needs: publish
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-      - name: Verify published legacy Stable package
-        shell: python
-        run: |
-          import hashlib, json
-          from pathlib import Path
-          manifest = json.loads(Path('feed/stable/stable.json').read_text(encoding='utf-8-sig'))
-          assert manifest['releaseVersion'] == '0.2.5.35'
-          assert manifest['sourceCommit'] == '3516a44092a34544f6daf5cdff6b4e61da1f74fd'
-          assert manifest['minimumUpdaterVersion'] == '0.1.2.0'
-          assert manifest['urgent'] is True
-          assert manifest['allowDowngrade'] is False
-          assert manifest['components']['hwmServiceVersion'] == '0.2.5.23'
-          assert manifest['components']['hwmTrayVersion'] == '1.0.0.19'
-          package = Path('feed/stable/Headline-HWM-Stable-v0.2.5.35.zip')
-          assert package.stat().st_size == manifest['package']['sizeBytes']
-          assert hashlib.sha256(package.read_bytes()).hexdigest().upper() == manifest['package']['sha256'].upper()
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: feed
-      - uses: actions/deploy-pages@v4
-        id: deploy
