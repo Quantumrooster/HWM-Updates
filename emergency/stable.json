@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "ee1c7476f0de7558013044e6adeaf4e1e3cd10d3",
+  "sourceCommit": "d72c4ddd0d2d32801d12fe8e54f2aa53995b0716",
   "channel": "stable",
-  "releaseVersion": "0.2.5.38",
-  "publishedUtc": "2026-09-29T20:31:30.9441813Z",
+  "releaseVersion": "0.2.5.39",
+  "publishedUtc": "2026-09-29T21:02:00Z",
   "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "Emergency direct Stable route for the Intune enrollment PRT refresh fix.",
+  "releaseNotes": "Emergency direct Stable route for the Intune enrollment system-context fallback fix.",
   "components": {
-    "hwmServiceVersion": "0.2.5.26",
+    "hwmServiceVersion": "0.2.5.27",
     "hwmTrayVersion": "1.0.0.19",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://raw.githubusercontent.com/Quantumrooster/HWM-Updates/main/feed/managed-v2/stable/Headline-HWM-Service-v0.2.5.38-Stable.zip",
-    "sha256": "39948B3F85A5D670F6B6F1ED2BFEC56AC40DFF2C5B55ACD5DF28732398A0C27B",
-    "sizeBytes": 99356788
+    "url": "https://raw.githubusercontent.com/Quantumrooster/HWM-Updates/main/feed/managed-v2/stable/Headline-HWM-Service-v0.2.5.39-Stable.zip",
+    "sha256": "C0BF2D0F1209DB531DF6285502C647FF6602D4053730B664800D410F165FF490",
+    "sizeBytes": 99359177
   }
 }
