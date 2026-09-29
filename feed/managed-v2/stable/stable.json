@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "3516a44092a34544f6daf5cdff6b4e61da1f74fd",
+  "sourceCommit": "68b4d373dd5628249125c210589bccf93b2c92a5",
   "channel": "stable",
-  "releaseVersion": "0.2.5.34",
-  "publishedUtc": "2026-09-28T19:07:20.1292897Z",
+  "releaseVersion": "0.2.5.36",
+  "publishedUtc": "2026-09-29T04:47:11.3369807Z",
   "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "Stable restart reminders. Service 0.2.5.23 and tray 1.0.0.19 enable staged reminders for pending Windows restarts, including Intune-managed PCs, while leaving update policy with Intune. Restart now, Tonight, Choose a time and Remind me tomorrow record acknowledgement telemetry in MSP. Automatic deadline scheduling remains disabled.",
+  "releaseNotes": "Stable post-reboot reminder reset. Service 0.2.5.24 clears the previous reminder after a real reboot, reassesses Windows Update for 30 minutes, and requires two separated signals before opening a legitimate second restart cycle. Tray remains 1.0.0.19. Automatic deadline scheduling remains disabled.",
   "components": {
-    "hwmServiceVersion": "0.2.5.23",
+    "hwmServiceVersion": "0.2.5.24",
     "hwmTrayVersion": "1.0.0.19",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.34-Stable.zip",
-    "sha256": "5F5DC40627B3B5CFED960B855459A40A7EECA639A2353D868048050E84C84B89",
-    "sizeBytes": 99343698
+    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.36-Stable.zip",
+    "sha256": "3F46725149D4579E70E7532CC4AB465A10478C231188BC64DFBF2C73A9370A28",
+    "sizeBytes": 99346986
   }
 }
