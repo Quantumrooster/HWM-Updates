@@ -49,7 +49,9 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          dotnet run --project _hwm/tests/UpdaterLockTests/UpdaterLockTests.csproj -c Release
+          dotnet build _hwm/tests/TrayFixture/TrayFixture.csproj -c Release -o _out/tray-fixture
+          if ($LASTEXITCODE) { throw 'Tray fixture build failed.' }
+          dotnet run --project _hwm/tests/UpdaterLockTests/UpdaterLockTests.csproj -c Release -- _out/tray-fixture
           if ($LASTEXITCODE) { throw 'Updater regression tests failed.' }
           dotnet publish _hwm/HeadlineManagedUpdater/HeadlineManagedUpdater.csproj `
             -c Release -r win-x64 --self-contained true -o _out/updater
