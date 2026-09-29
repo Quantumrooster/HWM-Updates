@@ -1,0 +1,148 @@
+name: Publish Managed Updater 0.1.6
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Catalog to publish after validation
+        required: true
+        type: choice
+        options:
+          - dev
+          - stable
+        default: dev
+      confirmation:
+        description: Enter PROMOTE_0.1.6.0 for Stable; leave blank for DEV
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: managed-updater-0.1.6-publish
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: '0f53f661c1c56067af301286ff513ec8d951aa71'
+  UPDATER_VERSION: '0.1.6.0'
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/checkout@v4
+        with:
+          repository: Quantumrooster/HWM
+          ref: ${{ env.SOURCE_SHA }}
+          token: ${{ secrets.HWM_PRIVATE_READ_TOKEN }}
+          path: _hwm
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Test and build the exact updater source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          dotnet run --project _hwm/tests/UpdaterLockTests/UpdaterLockTests.csproj -c Release
+          if ($LASTEXITCODE) { throw 'Updater regression tests failed.' }
+          dotnet publish _hwm/HeadlineManagedUpdater/HeadlineManagedUpdater.csproj `
+            -c Release -r win-x64 --self-contained true -o _out/updater
+          if ($LASTEXITCODE) { throw 'Updater build failed.' }
+
+          $exe = '_out/updater/HeadlineManagedUpdater.exe'
+          if ((Get-Item $exe).VersionInfo.FileVersion -ne $env:UPDATER_VERSION) {
+            throw "Built updater has the wrong version: $((Get-Item $exe).VersionInfo.FileVersion)"
+          }
+
+      - name: Stage immutable payload and catalog
+        shell: pwsh
+        env:
+          CHANNEL: ${{ inputs.channel }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:CHANNEL -eq 'stable' -and $env:CONFIRMATION -ne 'PROMOTE_0.1.6.0') {
+            throw 'Stable publication requires the exact confirmation PROMOTE_0.1.6.0.'
+          }
+
+          $exe = '_out/updater/HeadlineManagedUpdater.exe'
+          $hash = (Get-FileHash $exe -Algorithm SHA256).Hash.ToUpperInvariant()
+          $size = (Get-Item $exe).Length
+          $destination = "feed/updater/releases/$($env:UPDATER_VERSION)/HeadlineManagedUpdater.exe"
+          New-Item -ItemType Directory -Path (Split-Path $destination) -Force | Out-Null
+
+          if (Test-Path $destination) {
+            if ((Get-FileHash $destination -Algorithm SHA256).Hash.ToUpperInvariant() -ne $hash) {
+              throw 'Immutable updater payload already exists with different content.'
+            }
+          } else {
+            Copy-Item $exe $destination
+          }
+
+          if ($env:CHANNEL -eq 'stable') {
+            $dev = Get-Content feed/updater/dev.json -Raw | ConvertFrom-Json
+            if ($dev.version -ne $env:UPDATER_VERSION -or $dev.sha256.ToUpperInvariant() -ne $hash) {
+              throw 'Updater 0.1.6.0 must be published to DEV with the same hash before Stable.'
+            }
+          }
+
+          $catalogPath = "feed/updater/$($env:CHANNEL).json"
+          $current = Get-Content $catalogPath -Raw | ConvertFrom-Json
+          if ([version]$current.version -gt [version]$env:UPDATER_VERSION) {
+            throw 'The updater catalog is already newer; refusing to overwrite it.'
+          }
+
+          $catalog = [ordered]@{
+            schemaVersion = 1
+            sourceCommit = $env:SOURCE_SHA
+            channel = $env:CHANNEL
+            minimumMaintenanceProtocol = 1
+            version = $env:UPDATER_VERSION
+            url = "https://quantumrooster.github.io/HWM-Updates/updater/releases/$($env:UPDATER_VERSION)/HeadlineManagedUpdater.exe"
+            sha256 = $hash
+            sizeBytes = $size
+          }
+          $catalog | ConvertTo-Json -Depth 10 | Set-Content $catalogPath -Encoding utf8
+
+      - name: Verify and commit publication
+        shell: pwsh
+        env:
+          CHANNEL: ${{ inputs.channel }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $catalogPath = "feed/updater/$($env:CHANNEL).json"
+          $catalog = Get-Content $catalogPath -Raw | ConvertFrom-Json
+          $payload = "feed/updater/releases/$($catalog.version)/HeadlineManagedUpdater.exe"
+          if ($catalog.sourceCommit -ne $env:SOURCE_SHA -or $catalog.version -ne $env:UPDATER_VERSION) {
+            throw 'Catalog source or version does not match the release declaration.'
+          }
+          if ((Get-Item $payload).Length -ne $catalog.sizeBytes) { throw 'Updater size verification failed.' }
+          if ((Get-FileHash $payload -Algorithm SHA256).Hash.ToUpperInvariant() -ne $catalog.sha256.ToUpperInvariant()) {
+            throw 'Updater hash verification failed.'
+          }
+
+          git fetch origin main
+          if ($LASTEXITCODE) { throw 'Cannot refresh the feed repository.' }
+          $remote = git show "origin/main:$catalogPath" | ConvertFrom-Json
+          if ([version]$remote.version -gt [version]$env:UPDATER_VERSION) {
+            throw 'A newer updater was published concurrently.'
+          }
+
+          git config user.name 'Headline HWM Release Bot'
+          git config user.email '248761542+Quantumrooster@users.noreply.github.com'
+          git add $catalogPath "feed/updater/releases/$($env:UPDATER_VERSION)/HeadlineManagedUpdater.exe"
+          $changed = @(git diff --cached --name-only)
+          if ($changed | Where-Object { $_ -notmatch '^feed/updater/' }) { throw 'Unexpected staged path.' }
+          if ($changed.Count -eq 0) { Write-Host 'Requested updater publication already exists.'; exit 0 }
+          git commit -m "release: Managed Updater $($env:UPDATER_VERSION) to $($env:CHANNEL)"
+          if ($LASTEXITCODE) { throw 'Release commit failed.' }
+          git pull --rebase origin main
+          if ($LASTEXITCODE) { throw 'Feed rebase failed.' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE) { throw 'Feed push failed.' }
