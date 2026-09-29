@@ -36,6 +36,16 @@ try {
         $service.WaitForStatus([System.ServiceProcess.ServiceControllerStatus]::Stopped, [TimeSpan]::FromSeconds(60))
     }
 
+    $deadline = (Get-Date).AddSeconds(60)
+    while (@(Get-Process -Name 'HeadlineManagedUpdater' -ErrorAction SilentlyContinue).Count -gt 0 -and (Get-Date) -lt $deadline) {
+        Start-Sleep -Seconds 2
+    }
+    $runningUpdater = @(Get-Process -Name 'HeadlineManagedUpdater' -ErrorAction SilentlyContinue)
+    if ($runningUpdater.Count -gt 0) {
+        $runningUpdater | Stop-Process -Force
+        Start-Sleep -Seconds 2
+    }
+
     if (Test-Path -LiteralPath $updaterExe) {
         $backup = $updaterExe + '.backup-' + (Get-Date -Format 'yyyyMMdd-HHmmss')
         [IO.File]::Replace($temporaryUpdater, $updaterExe, $backup)
