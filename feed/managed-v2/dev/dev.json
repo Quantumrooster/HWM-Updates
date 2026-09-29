@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "37de28921851dd0bef56ca7cf3807d0a56641d75",
+  "sourceCommit": "68b4d373dd5628249125c210589bccf93b2c92a5",
   "channel": "dev",
-  "releaseVersion": "0.2.5.33",
-  "publishedUtc": "2026-09-28T12:06:25.0909206Z",
-  "urgent": false,
+  "releaseVersion": "0.2.5.38",
+  "publishedUtc": "2026-09-29T05:00:39.7883764Z",
+  "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "DEV pilot for restart reminder acknowledgement telemetry. Service 0.2.5.22 and tray 1.0.0.18 report notification, response, user, snooze and schedule status to MSP. User prompts and deadline enforcement remain disabled by default; preview mode remains side-effect free.",
+  "releaseNotes": "DEV post-reboot reminder reset. Service 0.2.5.24 clears the previous reminder after a real reboot, reassesses Windows Update for 30 minutes, and requires two separated signals before opening a legitimate second restart cycle. Tray remains 1.0.0.19. Automatic deadline scheduling remains disabled.",
   "components": {
-    "hwmServiceVersion": "0.2.5.22",
-    "hwmTrayVersion": "1.0.0.18",
+    "hwmServiceVersion": "0.2.5.24",
+    "hwmTrayVersion": "1.0.0.19",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/dev/Headline-HWM-Service-v0.2.5.33-DEV.zip",
-    "sha256": "D33CA544FFE1CBCC49E159E6E6E9D446466135B309E9AAD310B115F022DF1D2B",
-    "sizeBytes": 99343710
+    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.36-Stable.zip",
+    "sha256": "3F46725149D4579E70E7532CC4AB465A10478C231188BC64DFBF2C73A9370A28",
+    "sizeBytes": 99346986
   }
 }
