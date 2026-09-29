@@ -15,7 +15,6 @@ concurrency:
 env:
   SOURCE_SHA: '68b4d373dd5628249125c210589bccf93b2c92a5'
   MODERN_RELEASE_VERSION: '0.2.5.36'
-  LEGACY_RELEASE_VERSION: '0.2.5.37'
   SERVICE_VERSION: '0.2.5.24'
   TRAY_VERSION: '1.0.0.19'
 
@@ -57,15 +56,19 @@ jobs:
           if ($LASTEXITCODE) { throw 'Service build failed' }
           dotnet publish _hwm/HeadlineWorkstationMonitor/HeadlineWorkstationMonitor.csproj -c Release -o _out/tray
           if ($LASTEXITCODE) { throw 'Tray build failed' }
-      - name: Create modern and legacy Stable manifests
+      - name: Create modern Stable manifest
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $modernCurrent = Get-Content feed/managed-v2/stable/stable.json -Raw | ConvertFrom-Json
           $legacyCurrent = Get-Content feed/stable/stable.json -Raw | ConvertFrom-Json
-          if ([version]$modernCurrent.releaseVersion -ge [version]$env:MODERN_RELEASE_VERSION -or
-              [version]$legacyCurrent.releaseVersion -ge [version]$env:LEGACY_RELEASE_VERSION) {
-            throw 'A Stable feed has already advanced; review instead of overwriting.'
+          if ([version]$modernCurrent.releaseVersion -ge [version]$env:MODERN_RELEASE_VERSION) {
+            throw 'Modern Stable has already advanced; review instead of overwriting.'
+          }
+          if ($legacyCurrent.minimumUpdaterVersion -ne '0.1.2.0' -or
+              $legacyCurrent.components.hwmTrayVersion -ne '' -or
+              $legacyCurrent.package.url -notmatch 'Headline-HWM-Stable-Bridge-') {
+            throw 'Legacy Stable must remain on the service-only updater bridge.'
           }
 
           $updater = Get-Content feed/updater/stable.json -Raw | ConvertFrom-Json
@@ -119,21 +122,7 @@ jobs:
             components = $components
             package = $packageMetadata
           }
-          $legacyManifest = [ordered]@{
-            schemaVersion = 1
-            sourceCommit = $env:SOURCE_SHA
-            channel = 'stable'
-            releaseVersion = $env:LEGACY_RELEASE_VERSION
-            publishedUtc = [datetime]::UtcNow.ToString('o')
-            urgent = $true
-            allowDowngrade = $false
-            minimumUpdaterVersion = '0.1.2.0'
-            releaseNotes = $notes
-            components = $components
-            package = $packageMetadata
-          }
           $modernManifest | ConvertTo-Json -Depth 10 | Set-Content feed/managed-v2/stable/stable.json -Encoding utf8
-          $legacyManifest | ConvertTo-Json -Depth 10 | Set-Content feed/stable/stable.json -Encoding utf8
       - name: Commit Stable publication
         shell: pwsh
         run: |
@@ -142,15 +131,18 @@ jobs:
           if ($LASTEXITCODE) { throw 'Cannot refresh feed.' }
           $modernCurrent = git show origin/main:feed/managed-v2/stable/stable.json | ConvertFrom-Json
           $legacyCurrent = git show origin/main:feed/stable/stable.json | ConvertFrom-Json
-          if ([version]$modernCurrent.releaseVersion -ge [version]$env:MODERN_RELEASE_VERSION -or
-              [version]$legacyCurrent.releaseVersion -ge [version]$env:LEGACY_RELEASE_VERSION) {
-            throw 'Concurrent Stable release detected.'
+          if ([version]$modernCurrent.releaseVersion -ge [version]$env:MODERN_RELEASE_VERSION) {
+            throw 'Concurrent modern Stable release detected.'
+          }
+          if ($legacyCurrent.components.hwmTrayVersion -ne '' -or
+              $legacyCurrent.package.url -notmatch 'Headline-HWM-Stable-Bridge-') {
+            throw 'Legacy Stable updater bridge changed; refusing publication.'
           }
           git config user.name 'Headline HWM Release Bot'
           git config user.email '248761542+Quantumrooster@users.noreply.github.com'
-          git add feed/stable/stable.json feed/managed-v2/stable/stable.json "feed/managed-v2/stable/Headline-HWM-Service-v$($env:MODERN_RELEASE_VERSION)-Stable.zip"
+          git add feed/managed-v2/stable/stable.json "feed/managed-v2/stable/Headline-HWM-Service-v$($env:MODERN_RELEASE_VERSION)-Stable.zip"
           $changed = @(git diff --cached --name-only)
-          if ($changed | Where-Object { $_ -notmatch '^feed/(stable/stable\.json|managed-v2/stable/)' }) {
+          if ($changed | Where-Object { $_ -notmatch '^feed/managed-v2/stable/' }) {
             throw 'Unexpected staged path.'
           }
           git commit -m "release: post-reboot grace Stable $($env:MODERN_RELEASE_VERSION)"
@@ -170,30 +162,26 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Verify both Stable feeds
+      - name: Verify modern Stable and legacy bridge isolation
         shell: python
         run: |
           import hashlib, json
           from pathlib import Path
-          expected = {
-              'feed/managed-v2/stable/stable.json': ('0.2.5.36', '0.1.5.0'),
-              'feed/stable/stable.json': ('0.2.5.37', '0.1.2.0'),
-          }
-          manifests = []
-          for path, (release, updater) in expected.items():
-              manifest = json.loads(Path(path).read_text(encoding='utf-8-sig'))
-              assert manifest['releaseVersion'] == release
-              assert manifest['sourceCommit'] == '68b4d373dd5628249125c210589bccf93b2c92a5'
-              assert manifest['minimumUpdaterVersion'] == updater
-              assert manifest['urgent'] is True
-              assert manifest['allowDowngrade'] is False
-              assert manifest['components']['hwmServiceVersion'] == '0.2.5.24'
-              assert manifest['components']['hwmTrayVersion'] == '1.0.0.19'
-              manifests.append(manifest)
-          assert manifests[0]['package'] == manifests[1]['package']
+          manifest = json.loads(Path('feed/managed-v2/stable/stable.json').read_text(encoding='utf-8-sig'))
+          assert manifest['releaseVersion'] == '0.2.5.36'
+          assert manifest['sourceCommit'] == '68b4d373dd5628249125c210589bccf93b2c92a5'
+          assert manifest['minimumUpdaterVersion'] == '0.1.5.0'
+          assert manifest['urgent'] is True
+          assert manifest['allowDowngrade'] is False
+          assert manifest['components']['hwmServiceVersion'] == '0.2.5.24'
+          assert manifest['components']['hwmTrayVersion'] == '1.0.0.19'
           package = Path('feed/managed-v2/stable/Headline-HWM-Service-v0.2.5.36-Stable.zip')
-          assert package.stat().st_size == manifests[0]['package']['sizeBytes']
-          assert hashlib.sha256(package.read_bytes()).hexdigest().upper() == manifests[0]['package']['sha256'].upper()
+          assert package.stat().st_size == manifest['package']['sizeBytes']
+          assert hashlib.sha256(package.read_bytes()).hexdigest().upper() == manifest['package']['sha256'].upper()
+          legacy = json.loads(Path('feed/stable/stable.json').read_text(encoding='utf-8-sig'))
+          assert legacy['minimumUpdaterVersion'] == '0.1.2.0'
+          assert legacy['components']['hwmTrayVersion'] == ''
+          assert 'Headline-HWM-Stable-Bridge-' in legacy['package']['url']
       - uses: actions/upload-pages-artifact@v3
         with:
           path: feed
