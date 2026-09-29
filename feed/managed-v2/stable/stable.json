@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "d72c4ddd0d2d32801d12fe8e54f2aa53995b0716",
+  "sourceCommit": "d2a73d6b38e28f71cbcba0fbe5a89980a35008ce",
   "channel": "stable",
-  "releaseVersion": "0.2.5.39",
-  "publishedUtc": "2026-09-29T21:02:00Z",
+  "releaseVersion": "0.2.5.40",
+  "publishedUtc": "2026-09-29T21:45:00Z",
   "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "Urgent Stable Intune enrollment recovery. Service 0.2.5.27 refreshes the active Entra user's PRT, waits for newly enabled MDM discovery to propagate, and invokes the supported Windows system-context enrollment fallback only when Windows denies the interactive call. Existing tenant guards, repeat-enrollment prevention, persisted retry state, MDM evidence verification, and Sense/MDE reporting remain in place. Tray remains 1.0.0.19.",
+  "releaseNotes": "Urgent Stable Intune enrollment recovery. Service 0.2.5.28 retains all tenant and repeat-enrollment safeguards, then invokes the supported Windows system-context enrollment fallback when an eligible Entra user has no PRT or Windows denies the interactive call. MDM evidence verification and Sense/MDE reporting remain in place. Tray remains 1.0.0.19.",
   "components": {
-    "hwmServiceVersion": "0.2.5.27",
+    "hwmServiceVersion": "0.2.5.28",
     "hwmTrayVersion": "1.0.0.19",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.39-Stable.zip",
-    "sha256": "C0BF2D0F1209DB531DF6285502C647FF6602D4053730B664800D410F165FF490",
-    "sizeBytes": 99359177
+    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.40-Stable.zip",
+    "sha256": "61B4A3983A622DA65E4972C6E54DA893F0DE2D9DF9EB68192D5C109E38BC5A90",
+    "sizeBytes": 99359334
   }
 }
