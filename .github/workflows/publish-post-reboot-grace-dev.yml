@@ -1,0 +1,144 @@
+name: Publish post-reboot grace to DEV
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: post-reboot-grace-dev-publish
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: '68b4d373dd5628249125c210589bccf93b2c92a5'
+  RELEASE_VERSION: '0.2.5.38'
+  SERVICE_VERSION: '0.2.5.24'
+  TRAY_VERSION: '1.0.0.19'
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Quantumrooster/HWM
+          ref: ${{ env.SOURCE_SHA }}
+          token: ${{ secrets.HWM_PRIVATE_READ_TOKEN }}
+          path: _hwm
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Test the exact DEV source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($project in @(
+            '_hwm/tests/RestartReminderTests/RestartReminderTests.csproj',
+            '_hwm/tests/InventoryContractTests/InventoryContractTests.csproj',
+            '_hwm/tests/IntuneEnrollmentTests/IntuneEnrollmentTests.csproj',
+            '_hwm/tests/TrayLayoutChecks/TrayLayoutChecks.csproj'
+          )) {
+            dotnet run --project $project -c Release
+            if ($LASTEXITCODE) { throw "Checks failed: $project" }
+          }
+      - name: Publish exact Stable package to DEV feed
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $current = Get-Content feed/managed-v2/dev/dev.json -Raw | ConvertFrom-Json
+          if ([version]$current.releaseVersion -ge [version]$env:RELEASE_VERSION) {
+            throw 'DEV has already advanced; review instead of overwriting.'
+          }
+
+          $stable = Get-Content feed/managed-v2/stable/stable.json -Raw | ConvertFrom-Json
+          if ($stable.sourceCommit -ne $env:SOURCE_SHA -or
+              $stable.components.hwmServiceVersion -ne $env:SERVICE_VERSION -or
+              $stable.components.hwmTrayVersion -ne $env:TRAY_VERSION) {
+            throw 'The verified Stable package no longer matches this DEV release.'
+          }
+          $packageName = Split-Path -Leaf $stable.package.url
+          $packagePath = Join-Path 'feed/managed-v2/stable' $packageName
+          if (!(Test-Path -LiteralPath $packagePath) -or
+              (Get-Item $packagePath).Length -ne $stable.package.sizeBytes -or
+              (Get-FileHash $packagePath -Algorithm SHA256).Hash -ne $stable.package.sha256) {
+            throw 'The shared package failed local size or hash verification.'
+          }
+
+          $manifest = [ordered]@{
+            schemaVersion = 1
+            sourceCommit = $env:SOURCE_SHA
+            channel = 'dev'
+            releaseVersion = $env:RELEASE_VERSION
+            publishedUtc = [datetime]::UtcNow.ToString('o')
+            urgent = $true
+            allowDowngrade = $false
+            minimumUpdaterVersion = '0.1.5.0'
+            releaseNotes = 'DEV post-reboot reminder reset. Service 0.2.5.24 clears the previous reminder after a real reboot, reassesses Windows Update for 30 minutes, and requires two separated signals before opening a legitimate second restart cycle. Tray remains 1.0.0.19. Automatic deadline scheduling remains disabled.'
+            components = [ordered]@{
+              hwmServiceVersion = $env:SERVICE_VERSION
+              hwmTrayVersion = $env:TRAY_VERSION
+              hcsAutomationVersion = ''
+            }
+            package = $stable.package
+          }
+          $manifest | ConvertTo-Json -Depth 10 | Set-Content feed/managed-v2/dev/dev.json -Encoding utf8
+      - name: Commit DEV publication
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git fetch origin main
+          if ($LASTEXITCODE) { throw 'Cannot refresh feed.' }
+          $current = git show origin/main:feed/managed-v2/dev/dev.json | ConvertFrom-Json
+          if ([version]$current.releaseVersion -ge [version]$env:RELEASE_VERSION) {
+            throw 'Concurrent DEV release detected.'
+          }
+          git config user.name 'Headline HWM Release Bot'
+          git config user.email '248761542+Quantumrooster@users.noreply.github.com'
+          git add feed/managed-v2/dev/dev.json
+          $changed = @(git diff --cached --name-only)
+          if ($changed.Count -ne 1 -or $changed[0] -ne 'feed/managed-v2/dev/dev.json') {
+            throw 'Unexpected staged path.'
+          }
+          git commit -m "release: post-reboot grace DEV $($env:RELEASE_VERSION)"
+          if ($LASTEXITCODE) { throw 'Commit failed.' }
+          git pull --rebase origin main
+          if ($LASTEXITCODE) { throw 'Feed rebase failed.' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE) { throw 'Feed push failed.' }
+
+  pages:
+    needs: publish
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Verify DEV feed and shared package
+        shell: python
+        run: |
+          import hashlib, json
+          from pathlib import Path
+          manifest = json.loads(Path('feed/managed-v2/dev/dev.json').read_text(encoding='utf-8-sig'))
+          assert manifest['releaseVersion'] == '0.2.5.38'
+          assert manifest['sourceCommit'] == '68b4d373dd5628249125c210589bccf93b2c92a5'
+          assert manifest['minimumUpdaterVersion'] == '0.1.5.0'
+          assert manifest['urgent'] is True
+          assert manifest['allowDowngrade'] is False
+          assert manifest['components']['hwmServiceVersion'] == '0.2.5.24'
+          assert manifest['components']['hwmTrayVersion'] == '1.0.0.19'
+          package = Path('feed/managed-v2/stable/Headline-HWM-Service-v0.2.5.36-Stable.zip')
+          assert package.stat().st_size == manifest['package']['sizeBytes']
+          assert hashlib.sha256(package.read_bytes()).hexdigest().upper() == manifest['package']['sha256'].upper()
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: feed
+      - uses: actions/deploy-pages@v4
+        id: deploy
