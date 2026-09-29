@@ -1,0 +1,201 @@
+name: Publish post-reboot grace to Stable
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: post-reboot-grace-stable-publish
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: '68b4d373dd5628249125c210589bccf93b2c92a5'
+  MODERN_RELEASE_VERSION: '0.2.5.36'
+  LEGACY_RELEASE_VERSION: '0.2.5.37'
+  SERVICE_VERSION: '0.2.5.24'
+  TRAY_VERSION: '1.0.0.19'
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout: |
+            feed/stable
+            feed/managed-v2/stable
+            feed/updater/stable.json
+      - uses: actions/checkout@v4
+        with:
+          repository: Quantumrooster/HWM
+          ref: ${{ env.SOURCE_SHA }}
+          token: ${{ secrets.HWM_PRIVATE_READ_TOKEN }}
+          path: _hwm
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Test and build the exact Stable source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($project in @(
+            '_hwm/tests/RestartReminderTests/RestartReminderTests.csproj',
+            '_hwm/tests/InventoryContractTests/InventoryContractTests.csproj',
+            '_hwm/tests/IntuneEnrollmentTests/IntuneEnrollmentTests.csproj',
+            '_hwm/tests/TrayLayoutChecks/TrayLayoutChecks.csproj'
+          )) {
+            dotnet run --project $project -c Release
+            if ($LASTEXITCODE) { throw "Checks failed: $project" }
+          }
+          dotnet publish _hwm/ServiceProject/HeadlineWorkstationService.csproj -c Release -o _out/service
+          if ($LASTEXITCODE) { throw 'Service build failed' }
+          dotnet publish _hwm/HeadlineWorkstationMonitor/HeadlineWorkstationMonitor.csproj -c Release -o _out/tray
+          if ($LASTEXITCODE) { throw 'Tray build failed' }
+      - name: Create modern and legacy Stable manifests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $modernCurrent = Get-Content feed/managed-v2/stable/stable.json -Raw | ConvertFrom-Json
+          $legacyCurrent = Get-Content feed/stable/stable.json -Raw | ConvertFrom-Json
+          if ([version]$modernCurrent.releaseVersion -ge [version]$env:MODERN_RELEASE_VERSION -or
+              [version]$legacyCurrent.releaseVersion -ge [version]$env:LEGACY_RELEASE_VERSION) {
+            throw 'A Stable feed has already advanced; review instead of overwriting.'
+          }
+
+          $updater = Get-Content feed/updater/stable.json -Raw | ConvertFrom-Json
+          if ($updater.version -ne '0.1.5.0' -or
+              $updater.sha256 -ne 'F4E0DF804C951FC0A8CBB815837B8F8794E01BC1FD20D921A5091FE5D5D5D55F') {
+            throw 'Stable updater catalog changed; review it before publishing HWM.'
+          }
+
+          $service = '_out/service/HeadlineWorkstationService.exe'
+          $tray = '_out/tray/HeadlineWorkstationMonitor.exe'
+          if ((Get-Item $service).VersionInfo.FileVersion -ne $env:SERVICE_VERSION -or
+              (Get-Item $tray).VersionInfo.FileVersion -ne $env:TRAY_VERSION) {
+            throw 'Built component versions do not match the release declaration.'
+          }
+
+          $package = "feed/managed-v2/stable/Headline-HWM-Service-v$($env:MODERN_RELEASE_VERSION)-Stable.zip"
+          if (Test-Path -LiteralPath $package) { throw "Immutable package already exists: $package" }
+          Compress-Archive -Path @($service, $tray) -DestinationPath $package -CompressionLevel Optimal
+          if ((Get-Item $package).Length -ge 104857600) { throw 'Package is too large for the release repository.' }
+
+          $expanded = Join-Path $env:RUNNER_TEMP 'post-reboot-stable-package'
+          Expand-Archive -LiteralPath $package -DestinationPath $expanded
+          $files = @(Get-ChildItem $expanded -File)
+          $expectedNames = @('HeadlineWorkstationMonitor.exe', 'HeadlineWorkstationService.exe')
+          if ($files.Count -ne 2 -or @($files.Name | Where-Object { $_ -notin $expectedNames }).Count -ne 0) {
+            throw 'Package contains files unsupported by the legacy updater.'
+          }
+
+          $base = 'https://quantumrooster.github.io/HWM-Updates'
+          $packageMetadata = [ordered]@{
+            url = "$base/managed-v2/stable/$(Split-Path -Leaf $package)"
+            sha256 = (Get-FileHash $package -Algorithm SHA256).Hash
+            sizeBytes = (Get-Item $package).Length
+          }
+          $notes = 'Stable post-reboot reminder reset. Service 0.2.5.24 clears the previous reminder after a real reboot, reassesses Windows Update for 30 minutes, and requires two separated signals before opening a legitimate second restart cycle. Tray remains 1.0.0.19. Automatic deadline scheduling remains disabled.'
+          $components = [ordered]@{
+            hwmServiceVersion = $env:SERVICE_VERSION
+            hwmTrayVersion = $env:TRAY_VERSION
+            hcsAutomationVersion = ''
+          }
+          $modernManifest = [ordered]@{
+            schemaVersion = 1
+            sourceCommit = $env:SOURCE_SHA
+            channel = 'stable'
+            releaseVersion = $env:MODERN_RELEASE_VERSION
+            publishedUtc = [datetime]::UtcNow.ToString('o')
+            urgent = $true
+            allowDowngrade = $false
+            minimumUpdaterVersion = '0.1.5.0'
+            releaseNotes = $notes
+            components = $components
+            package = $packageMetadata
+          }
+          $legacyManifest = [ordered]@{
+            schemaVersion = 1
+            sourceCommit = $env:SOURCE_SHA
+            channel = 'stable'
+            releaseVersion = $env:LEGACY_RELEASE_VERSION
+            publishedUtc = [datetime]::UtcNow.ToString('o')
+            urgent = $true
+            allowDowngrade = $false
+            minimumUpdaterVersion = '0.1.2.0'
+            releaseNotes = $notes
+            components = $components
+            package = $packageMetadata
+          }
+          $modernManifest | ConvertTo-Json -Depth 10 | Set-Content feed/managed-v2/stable/stable.json -Encoding utf8
+          $legacyManifest | ConvertTo-Json -Depth 10 | Set-Content feed/stable/stable.json -Encoding utf8
+      - name: Commit Stable publication
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git fetch origin main
+          if ($LASTEXITCODE) { throw 'Cannot refresh feed.' }
+          $modernCurrent = git show origin/main:feed/managed-v2/stable/stable.json | ConvertFrom-Json
+          $legacyCurrent = git show origin/main:feed/stable/stable.json | ConvertFrom-Json
+          if ([version]$modernCurrent.releaseVersion -ge [version]$env:MODERN_RELEASE_VERSION -or
+              [version]$legacyCurrent.releaseVersion -ge [version]$env:LEGACY_RELEASE_VERSION) {
+            throw 'Concurrent Stable release detected.'
+          }
+          git config user.name 'Headline HWM Release Bot'
+          git config user.email '248761542+Quantumrooster@users.noreply.github.com'
+          git add feed/stable/stable.json feed/managed-v2/stable/stable.json "feed/managed-v2/stable/Headline-HWM-Service-v$($env:MODERN_RELEASE_VERSION)-Stable.zip"
+          $changed = @(git diff --cached --name-only)
+          if ($changed | Where-Object { $_ -notmatch '^feed/(stable/stable\.json|managed-v2/stable/)' }) {
+            throw 'Unexpected staged path.'
+          }
+          git commit -m "release: post-reboot grace Stable $($env:MODERN_RELEASE_VERSION)"
+          if ($LASTEXITCODE) { throw 'Commit failed.' }
+          git pull --rebase origin main
+          if ($LASTEXITCODE) { throw 'Feed rebase failed.' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE) { throw 'Feed push failed.' }
+
+  pages:
+    needs: publish
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Verify both Stable feeds
+        shell: python
+        run: |
+          import hashlib, json
+          from pathlib import Path
+          expected = {
+              'feed/managed-v2/stable/stable.json': ('0.2.5.36', '0.1.5.0'),
+              'feed/stable/stable.json': ('0.2.5.37', '0.1.2.0'),
+          }
+          manifests = []
+          for path, (release, updater) in expected.items():
+              manifest = json.loads(Path(path).read_text(encoding='utf-8-sig'))
+              assert manifest['releaseVersion'] == release
+              assert manifest['sourceCommit'] == '68b4d373dd5628249125c210589bccf93b2c92a5'
+              assert manifest['minimumUpdaterVersion'] == updater
+              assert manifest['urgent'] is True
+              assert manifest['allowDowngrade'] is False
+              assert manifest['components']['hwmServiceVersion'] == '0.2.5.24'
+              assert manifest['components']['hwmTrayVersion'] == '1.0.0.19'
+              manifests.append(manifest)
+          assert manifests[0]['package'] == manifests[1]['package']
+          package = Path('feed/managed-v2/stable/Headline-HWM-Service-v0.2.5.36-Stable.zip')
+          assert package.stat().st_size == manifests[0]['package']['sizeBytes']
+          assert hashlib.sha256(package.read_bytes()).hexdigest().upper() == manifests[0]['package']['sha256'].upper()
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: feed
+      - uses: actions/deploy-pages@v4
+        id: deploy
