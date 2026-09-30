@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "d2a73d6b38e28f71cbcba0fbe5a89980a35008ce",
+  "sourceCommit": "0293585cb58672d5fbdb6d56e3b461570cf2d47e",
   "channel": "stable",
-  "releaseVersion": "0.2.5.40",
-  "publishedUtc": "2026-09-29T21:45:00Z",
+  "releaseVersion": "0.2.5.41",
+  "publishedUtc": "2026-09-30T00:44:46Z",
   "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "Urgent Stable Intune enrollment recovery. Service 0.2.5.28 retains all tenant and repeat-enrollment safeguards, then invokes the supported Windows system-context enrollment fallback when an eligible Entra user has no PRT or Windows denies the interactive call. MDM evidence verification and Sense/MDE reporting remain in place. Tray remains 1.0.0.19.",
+  "releaseNotes": "Stable MSP Terminal long-running command support. Service 0.2.5.29 starts terminal commands as asynchronous jobs, reports running/completed/failed state, captures output and exit codes, and allows configured runtimes up to two hours without an API timeout terminating the endpoint process. Existing Intune recovery, restart reminder, inventory, and security reporting behavior remains in place. Tray remains 1.0.0.19.",
   "components": {
-    "hwmServiceVersion": "0.2.5.28",
+    "hwmServiceVersion": "0.2.5.29",
     "hwmTrayVersion": "1.0.0.19",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.40-Stable.zip",
-    "sha256": "61B4A3983A622DA65E4972C6E54DA893F0DE2D9DF9EB68192D5C109E38BC5A90",
-    "sizeBytes": 99359334
+    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.41-Stable.zip",
+    "sha256": "787D2A576740F921F7DB5587056289E67E68A17FABC9122D1E7EDE3728CBFCE4",
+    "sizeBytes": 99365737
   }
 }
