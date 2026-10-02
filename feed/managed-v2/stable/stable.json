@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "0293585cb58672d5fbdb6d56e3b461570cf2d47e",
+  "sourceCommit": "fe76969a47775ee27f89420b59d38306f6869bc8",
   "channel": "stable",
-  "releaseVersion": "0.2.5.41",
-  "publishedUtc": "2026-09-30T00:44:46Z",
+  "releaseVersion": "0.2.5.42",
+  "publishedUtc": "2026-10-02T17:55:51Z",
   "urgent": true,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "Stable MSP Terminal long-running command support. Service 0.2.5.29 starts terminal commands as asynchronous jobs, reports running/completed/failed state, captures output and exit codes, and allows configured runtimes up to two hours without an API timeout terminating the endpoint process. Existing Intune recovery, restart reminder, inventory, and security reporting behavior remains in place. Tray remains 1.0.0.19.",
+  "releaseNotes": "Stable terminal-result reliability fix. Service 0.2.5.30 keeps completed terminal results and retries their upload after a temporary connection failure, preventing completed jobs from later appearing as expired in MSP Operations. Tray remains 1.0.0.19.",
   "components": {
-    "hwmServiceVersion": "0.2.5.29",
+    "hwmServiceVersion": "0.2.5.30",
     "hwmTrayVersion": "1.0.0.19",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.41-Stable.zip",
-    "sha256": "787D2A576740F921F7DB5587056289E67E68A17FABC9122D1E7EDE3728CBFCE4",
-    "sizeBytes": 99365737
+    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.42-Stable.zip",
+    "sha256": "99FC3287BDB4B2B0780BB290DAABFB07FC058956B4C5287178D612378387F1F5",
+    "sizeBytes": 99365795
   }
 }
