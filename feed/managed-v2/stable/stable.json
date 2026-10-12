@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "fe76969a47775ee27f89420b59d38306f6869bc8",
+  "sourceCommit": "b5e9e8fb6d4ec27ef9d0fcc4ea59a0b194567a0f",
   "channel": "stable",
-  "releaseVersion": "0.2.5.42",
-  "publishedUtc": "2026-10-02T17:55:51Z",
-  "urgent": true,
+  "releaseVersion": "0.2.5.43",
+  "publishedUtc": "2026-10-12T22:28:10Z",
+  "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "Stable terminal-result reliability fix. Service 0.2.5.30 keeps completed terminal results and retries their upload after a temporary connection failure, preventing completed jobs from later appearing as expired in MSP Operations. Tray remains 1.0.0.19.",
+  "releaseNotes": "Logged In User on workstation tiles above Assignment. Service 0.2.5.31 and tray 1.0.0.20 report interactive Windows sessions, disconnected and multiple sessions, and last-user fallback. SYSTEM collection passed on HCSPC2025. Preserves Stable 0.2.5.42 terminal-result retries, updater continuity, Intune and restart reminders. Managed updater and legacy migration bridge unchanged.",
   "components": {
-    "hwmServiceVersion": "0.2.5.30",
-    "hwmTrayVersion": "1.0.0.19",
+    "hwmServiceVersion": "0.2.5.31",
+    "hwmTrayVersion": "1.0.0.20",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.42-Stable.zip",
-    "sha256": "99FC3287BDB4B2B0780BB290DAABFB07FC058956B4C5287178D612378387F1F5",
-    "sizeBytes": 99365795
+    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.43-Stable.zip",
+    "sha256": "3039ED6A087F23340A89458DB11178B82E509C98D36635DB9B91539A204867AB",
+    "sizeBytes": 99361673
   }
 }
