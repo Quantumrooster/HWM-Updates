@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "b5e9e8fb6d4ec27ef9d0fcc4ea59a0b194567a0f",
+  "sourceCommit": "63c0e625a407cb9c1dbe048f5e18729c2a50ad01",
   "channel": "stable",
-  "releaseVersion": "0.2.5.43",
-  "publishedUtc": "2026-10-12T22:28:10Z",
+  "releaseVersion": "0.2.5.44",
+  "publishedUtc": "2026-10-13T01:56:35.9315217Z",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "Logged In User on workstation tiles above Assignment. Service 0.2.5.31 and tray 1.0.0.20 report interactive Windows sessions, disconnected and multiple sessions, and last-user fallback. SYSTEM collection passed on HCSPC2025. Preserves Stable 0.2.5.42 terminal-result retries, updater continuity, Intune and restart reminders. Managed updater and legacy migration bridge unchanged.",
+  "releaseNotes": "Live managed update visibility and canary-gated release requests in the MSP dashboard. Service 0.2.5.32 and tray 1.0.0.21 report installed and available releases, component versions, update policy, maintenance timing and actual SYSTEM identity evidence. HCSPC2025 passed installation, fresh SYSTEM heartbeat, component matching and healthy/no-rollback gates. Preserves interactive user display, terminal-result retries, updater continuity, Intune and restart reminders. Managed updater, legacy migration bridge and existing installation schedules unchanged.",
   "components": {
-    "hwmServiceVersion": "0.2.5.31",
-    "hwmTrayVersion": "1.0.0.20",
+    "hwmServiceVersion": "0.2.5.32",
+    "hwmTrayVersion": "1.0.0.21",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/Headline-HWM-Service-v0.2.5.43-Stable.zip",
-    "sha256": "3039ED6A087F23340A89458DB11178B82E509C98D36635DB9B91539A204867AB",
-    "sizeBytes": 99361673
+    "url": "https://quantumrooster.github.io/HWM-Updates/canary/0.2.5.44/Headline-HWM-0.2.5.44.zip",
+    "sha256": "B1C3CCED9FB6AFB20792F76CB7ED40E564FD7D54EE1FC2874C91764C8C592E72",
+    "sizeBytes": 99357915
   }
 }
