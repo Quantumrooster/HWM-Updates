@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "channel": "stable",
+  "releaseVersion": "0.2.5.44",
+  "sourceCommit": "63c0e625a407cb9c1dbe048f5e18729c2a50ad01",
+  "publishedUtc": "2026-10-13T13:14:41.8340257+13:00",
+  "urgent": false,
+  "allowDowngrade": false,
+  "minimumUpdaterVersion": "0.1.5.0",
+  "releaseNotes": "Canary: real managed update status and SYSTEM identity evidence.",
+  "components": {
+    "hwmServiceVersion": "0.2.5.32",
+    "hcsAutomationVersion": "",
+    "hwmTrayVersion": "1.0.0.21"
+  },
+  "package": {
+    "sha256": "B1C3CCED9FB6AFB20792F76CB7ED40E564FD7D54EE1FC2874C91764C8C592E72",
+    "url": "https://quantumrooster.github.io/HWM-Updates/canary/0.2.5.44/Headline-HWM-0.2.5.44.zip",
+    "sizeBytes": 99357915
+  },
+  "validation": {
+    "runUrls": [
+      "https://github.com/Quantumrooster/HWM/actions/runs/38326238758",
+      "https://github.com/Quantumrooster/HWM/actions/runs/38326238775",
+      "https://github.com/Quantumrooster/HWM/actions/runs/38326238682"
+    ],
+    "passed": true,
+    "sourceCommit": "63c0e625a407cb9c1dbe048f5e18729c2a50ad01"
+  }
+}
