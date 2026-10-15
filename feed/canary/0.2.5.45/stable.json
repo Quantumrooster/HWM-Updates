@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "channel": "stable",
+  "releaseVersion": "0.2.5.45",
+  "sourceCommit": "b93925658412e3468c6665e3a186e0476c6b13bb",
+  "publishedUtc": "2026-10-16T12:49:03.5234582+13:00",
+  "urgent": false,
+  "allowDowngrade": false,
+  "minimumUpdaterVersion": "0.1.5.0",
+  "releaseNotes": "HCSPC2025-only 24-hour canary. Modeless restart reminder, stale-choice rejection, background scheduling and display diagnostics. Fleet stable feed unchanged.",
+  "components": {
+    "hwmServiceVersion": "0.2.5.32",
+    "hwmTrayVersion": "1.0.0.22",
+    "hcsAutomationVersion": ""
+  },
+  "package": {
+    "url": "https://quantumrooster.github.io/HWM-Updates/canary/0.2.5.45/Headline-HWM-0.2.5.45.zip",
+    "sha256": "E000EFA92E49B31C423A37B5482A95A829A184E95BB6B90DD402A7463277F8D1",
+    "sizeBytes": 99432077
+  },
+  "validation": {
+    "passed": true,
+    "sourceCommit": "b93925658412e3468c6665e3a186e0476c6b13bb",
+    "runUrls": [
+      "https://github.com/Quantumrooster/HWM/actions/runs/38825751013",
+      "https://github.com/Quantumrooster/HWM/actions/runs/38825771995",
+      "https://github.com/Quantumrooster/HWM/actions/runs/38825771911"
+    ]
+  }
+}
