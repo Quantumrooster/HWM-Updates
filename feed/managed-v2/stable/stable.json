@@ -1,21 +1,31 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "63c0e625a407cb9c1dbe048f5e18729c2a50ad01",
   "channel": "stable",
-  "releaseVersion": "0.2.5.44",
-  "publishedUtc": "2026-10-13T01:56:35.9315217Z",
+  "releaseVersion": "0.2.5.47",
+  "sourceCommit": "177996e208f381b931da96d72b122c2901bcda91",
+  "publishedUtc": "2026-10-19T06:55:40.2789603+00:00",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.5.0",
-  "releaseNotes": "Live managed update visibility and canary-gated release requests in the MSP dashboard. Service 0.2.5.32 and tray 1.0.0.21 report installed and available releases, component versions, update policy, maintenance timing and actual SYSTEM identity evidence. HCSPC2025 passed installation, fresh SYSTEM heartbeat, component matching and healthy/no-rollback gates. Preserves interactive user display, terminal-result retries, updater continuity, Intune and restart reminders. Managed updater, legacy migration bridge and existing installation schedules unchanged.",
+  "releaseNotes": "Validated native resource lifetime fixes in service33 and tray23. Completed isolated post-reboot trial:300 samples per stream spanning24.83hours; handles and Event baselines bounded, USER/GDI stable, memory plateau, no new HWM crash/hang/dump, fresh Azure heartbeat, no updater rollback/error. Reminder lifecycle fixes retained. Existing updater, legacy bridge, security and maintenance policy unchanged.",
   "components": {
-    "hwmServiceVersion": "0.2.5.32",
-    "hwmTrayVersion": "1.0.0.21",
+    "hwmServiceVersion": "0.2.5.33",
+    "hwmTrayVersion": "1.0.0.23",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/canary/0.2.5.44/Headline-HWM-0.2.5.44.zip",
-    "sha256": "B1C3CCED9FB6AFB20792F76CB7ED40E564FD7D54EE1FC2874C91764C8C592E72",
-    "sizeBytes": 99357915
+    "url": "https://quantumrooster.github.io/HWM-Updates/canary/0.2.5.47/Headline-HWM-0.2.5.47.zip",
+    "sha256": "E2BC091E06E72251E53F95BF20FE43F9D3F87E20F2DFF969E812010DA28A0F2E",
+    "sizeBytes": 99442093
+  },
+  "validation": {
+    "passed": true,
+    "sourceCommit": "177996e208f381b931da96d72b122c2901bcda91",
+    "trialHours": 24.83,
+    "runUrls": [
+      "https://github.com/Quantumrooster/HWM/actions/runs/39080959555",
+      "https://github.com/Quantumrooster/HWM/actions/runs/39080963023",
+      "https://github.com/Quantumrooster/HWM/actions/runs/39080963022"
+    ]
   }
 }
