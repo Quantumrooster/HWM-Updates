@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "runtime": "win-arm64",
+  "channel": "stable",
+  "releaseVersion": "0.2.5.47",
+  "sourceCommit": "177996e208f381b931da96d72b122c2901bcda91",
+  "arm64SupportCommit": "0341e3f408ec6b36e1e930e8d20c0cddfe8050ca",
+  "publishedUtc": "2026-10-20T17:54:28.4606884+00:00",
+  "urgent": false,
+  "allowDowngrade": false,
+  "minimumUpdaterVersion": "1.2.5.47",
+  "releaseNotes": "Native ARM64 build from validated Stable source; architecture-checked automatic updates and native ARM64 updater lock/rollback regression tests.",
+  "components": {
+    "hwmServiceVersion": "0.2.5.33",
+    "hwmTrayVersion": "1.0.0.23",
+    "hcsAutomationVersion": ""
+  },
+  "package": {
+    "url": "https://quantumrooster.github.io/HWM-Updates/arm64/releases/0.2.5.47/Headline-HWM-0.2.5.47-win-arm64.zip",
+    "sha256": "3D7AD7D8F9B493896CDB218F4F38EE65B80DD677B51610964EC6FB3048B9813A",
+    "sizeBytes": 93510555
+  },
+  "validation": {
+    "passed": true,
+    "nativeArm64": true,
+    "sourceCommit": "177996e208f381b931da96d72b122c2901bcda91",
+    "runUrl": "https://github.com/Quantumrooster/HWM-Updates/actions/runs/39469842288"
+  }
+}

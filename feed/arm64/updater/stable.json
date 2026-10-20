@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "runtime": "win-arm64",
+  "sourceCommit": "177996e208f381b931da96d72b122c2901bcda91",
+  "arm64SupportCommit": "0341e3f408ec6b36e1e930e8d20c0cddfe8050ca",
+  "channel": "stable",
+  "minimumMaintenanceProtocol": 1,
+  "version": "1.2.5.47",
+  "url": "https://quantumrooster.github.io/HWM-Updates/arm64/releases/0.2.5.47/HeadlineManagedUpdater.exe",
+  "sha256": "1FDE3E5F556B204999DF7D9B2F0CDB600D7503F9BE673689175C6C12F89224C7",
+  "sizeBytes": 77960036
+}
