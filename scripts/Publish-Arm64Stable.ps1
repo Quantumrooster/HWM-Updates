@@ -67,9 +67,7 @@ if($Publish) {
     if($LASTEXITCODE){throw 'Feed rebase failed.'}
     git push origin HEAD:main
     if($LASTEXITCODE){throw 'Feed push failed.'}
-    # The direct HTTPS repository feed is live after push; Pages is an optional mirror.
-    gh workflow run pages.yml --ref main
-    if($LASTEXITCODE){throw 'Pages deployment dispatch failed.'}
+    Write-Host 'ARM64 direct HTTPS feed published; no full-site deployment required.'
 }
 
 
