@@ -4,7 +4,7 @@ $ErrorActionPreference='Stop'
 $source=(Resolve-Path $SourcePath).Path
 $stable=Invoke-RestMethod ('https://quantumrooster.github.io/HWM-Updates/managed-v2/stable/stable.json?armcb='+[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds())
 if ($stable.sourceCommit -notmatch '^[a-f0-9]{40}$' -or $stable.validation.passed -ne $true -or $stable.validation.sourceCommit -ne $stable.sourceCommit) {throw 'Stable source validation is missing.'}
-$support='0341e3fb'
+if (-not [string]::IsNullOrWhiteSpace($stable.components.hcsAutomationVersion)) {throw 'Stable adds HCS Automation; an ARM64 build must be supported before publication.'}
 # Resolve the immutable support commit from the checked-out private source.
 $support=(git -C $source rev-parse HEAD).Trim()
 $base='177996e208f381b931da96d72b122c2901bcda91'
