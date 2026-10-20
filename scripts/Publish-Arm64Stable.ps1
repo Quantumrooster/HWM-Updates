@@ -50,7 +50,7 @@ New-Item -ItemType Directory -Force -Path $releaseFolder,'feed/arm64/updater','f
 $zip="$releaseFolder/Headline-HWM-$releaseVersion-win-arm64.zip"
 Compress-Archive -LiteralPath @($service,$tray) -DestinationPath $zip -CompressionLevel Optimal
 Copy-Item -LiteralPath $updater -Destination "$releaseFolder/HeadlineManagedUpdater.exe"
-$baseUrl='https://quantumrooster.github.io/HWM-Updates/arm64'
+$baseUrl='https://raw.githubusercontent.com/Quantumrooster/HWM-Updates/main/feed/arm64'
 $catalog=[ordered]@{schemaVersion=1;runtime='win-arm64';sourceCommit=$stable.sourceCommit;arm64SupportCommit=$support;channel='stable';minimumMaintenanceProtocol=1;version=$updaterVersion;url="$baseUrl/releases/$releaseVersion/HeadlineManagedUpdater.exe";sha256=(Get-FileHash $updater).Hash;sizeBytes=(Get-Item $updater).Length}
 $manifest=[ordered]@{schemaVersion=1;runtime='win-arm64';channel='stable';releaseVersion=[string]$releaseVersion;sourceCommit=$stable.sourceCommit;arm64SupportCommit=$support;publishedUtc=[DateTimeOffset]::UtcNow.ToString('o');urgent=$false;allowDowngrade=$false;minimumUpdaterVersion=$updaterVersion;releaseNotes='Native ARM64 build from validated Stable source; architecture-checked automatic updates and native ARM64 updater lock/rollback regression tests.';components=$stable.components;package=[ordered]@{url="$baseUrl/releases/$releaseVersion/Headline-HWM-$releaseVersion-win-arm64.zip";sha256=(Get-FileHash $zip).Hash;sizeBytes=(Get-Item $zip).Length};validation=[ordered]@{passed=$true;nativeArm64=$true;sourceCommit=$stable.sourceCommit;runUrl="https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"}}
 $catalog | ConvertTo-Json -Depth 8 | Set-Content feed/arm64/updater/stable.json -Encoding utf8
@@ -67,6 +67,8 @@ if($Publish) {
     if($LASTEXITCODE){throw 'Feed rebase failed.'}
     git push origin HEAD:main
     if($LASTEXITCODE){throw 'Feed push failed.'}
+    # The direct HTTPS repository feed is live after push; Pages is an optional mirror.
     gh workflow run pages.yml --ref main
     if($LASTEXITCODE){throw 'Pages deployment dispatch failed.'}
 }
+

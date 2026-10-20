@@ -16,7 +16,7 @@
     "hcsAutomationVersion": ""
   },
   "package": {
-    "url": "https://quantumrooster.github.io/HWM-Updates/arm64/releases/0.2.5.47/Headline-HWM-0.2.5.47-win-arm64.zip",
+    "url": "https://raw.githubusercontent.com/Quantumrooster/HWM-Updates/main/feed/arm64/releases/0.2.5.47/Headline-HWM-0.2.5.47-win-arm64.zip",
     "sha256": "3D7AD7D8F9B493896CDB218F4F38EE65B80DD677B51610964EC6FB3048B9813A",
     "sizeBytes": 93510555
   },
@@ -27,3 +27,4 @@
     "runUrl": "https://github.com/Quantumrooster/HWM-Updates/actions/runs/39469842288"
   }
 }
+
