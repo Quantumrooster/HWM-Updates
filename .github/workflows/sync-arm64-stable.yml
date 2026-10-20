@@ -1,0 +1,38 @@
+name: Sync ARM64 Stable
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 * * * *'
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: hwm-arm64-stable
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: windows-11-arm
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          sparse-checkout: |
+            scripts
+            feed/arm64
+      - uses: actions/checkout@v4
+        with:
+          repository: Quantumrooster/HWM
+          ref: 0341e3f408ec6b36e1e930e8d20c0cddfe8050ca
+          token: ${{ secrets.HWM_PRIVATE_READ_TOKEN }}
+          path: _hwm
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build, validate natively and publish ARM64 Stable
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/Publish-Arm64Stable.ps1 -SourcePath _hwm -Publish
+
