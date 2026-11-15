@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
   "channel": "stable",
-  "releaseVersion": "support-converted-1.0.0",
+  "releaseVersion": "support-converted-1.0.1",
   "urgent": false,
   "allowDowngrade": false,
   "minimumUpdaterVersion": "0.1.7.0",
-  "releaseNotes": "Dedicated Headline Support converted-device baseline.",
+  "releaseNotes": "Preserve existing fleet Business keys in converted monitoring and tray.",
   "components": {
-    "hwmTrayVersion": "1.0.1.0",
-    "hwmServiceVersion": "0.2.6.1",
+    "hwmTrayVersion": "1.0.1.1",
+    "hwmServiceVersion": "0.2.6.2",
     "hcsAutomationVersion": ""
   },
   "package": {
-    "sha256": "D08AB9D449683F48761512EB847C24980674FF563DF273F17DAEC06E2A3DEF07",
-    "sizeBytes": 99459754,
-    "url": "https://quantumrooster.github.io/HWM-Updates/support-converted/v1/HeadlineSupport-Managed-1.0.0.zip"
+    "sha256": "E6CF3E08B470EA4FE54359454F4997FDE0CA6D16D21227CD043B0DE909F3C72A",
+    "sizeBytes": 99460029,
+    "url": "https://quantumrooster.github.io/HWM-Updates/support-converted/v1/HeadlineSupport-Managed-1.0.1.zip"
   }
 }
