@@ -4,8 +4,8 @@
   "releaseVersion": "support-converted-1.0.1",
   "urgent": false,
   "allowDowngrade": false,
-  "minimumUpdaterVersion": "0.1.7.0",
-  "releaseNotes": "Preserve existing fleet Business keys in converted monitoring and tray.",
+  "minimumUpdaterVersion": "0.1.7.1",
+  "releaseNotes": "Preserve existing fleet Business keys in the ordinary worker, tray and updater.",
   "components": {
     "hwmTrayVersion": "1.0.1.1",
     "hwmServiceVersion": "0.2.6.2",

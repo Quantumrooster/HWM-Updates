@@ -1,8 +1,8 @@
 {
+  "sizeBytes": 69935256,
+  "version": "0.1.7.1",
+  "sha256": "3DCC43E82D5E37F95EB1D97A2060DD95F531507A2AD72AA95B7D8C6DD3AAAA30",
+  "url": "https://quantumrooster.github.io/HWM-Updates/support-converted/v1/updater/HeadlineManagedUpdater-0.1.7.1.exe",
   "schemaVersion": 1,
-  "channel": "stable",
-  "version": "0.1.7.0",
-  "url": "https://quantumrooster.github.io/HWM-Updates/support-converted/v1/updater/HeadlineManagedUpdater-0.1.7.0.exe",
-  "sha256": "17949E6FFF5046C21F07348EF7A8AD6045728600950032541A5666595986FC37",
-  "sizeBytes": 69935256
+  "channel": "stable"
 }
